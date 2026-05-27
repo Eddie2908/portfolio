@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard — Admin DevPortfolio</title>
+    <link rel="stylesheet" href="css/admin.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/forms.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <style>
+        .main-tabs{display:flex;gap:4px;border-bottom:1px solid var(--border);padding:0 24px;background:var(--bg-card);margin-bottom:0;}
+        .main-tab-btn{padding:14px 20px;font-size:13px;font-weight:500;color:var(--text-secondary);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;transition:color .2s,border-color .2s;white-space:nowrap;}
+        .main-tab-btn.active{color:var(--accent);border-bottom-color:var(--accent);}
+        .main-tab-pane{display:none;}
+        .main-tab-pane.active{display:block;}
+        .profile-tab-content{padding:24px;max-width:760px;}
+        .sub-tabs{display:flex;gap:4px;border-bottom:1px solid var(--border);margin-bottom:24px;overflow-x:auto;}
+        .sub-tab-btn{padding:8px 16px;font-size:12px;font-weight:500;color:var(--text-secondary);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;transition:color .2s,border-color .2s;white-space:nowrap;}
+        .sub-tab-btn.active{color:var(--accent);border-bottom-color:var(--accent);}
+        .sub-tab-pane{display:none;}
+        .sub-tab-pane.active{display:block;}
+        .avatar-upload-area{display:flex;align-items:center;gap:20px;padding:20px;background:var(--hover-bg);border-radius:var(--radius);border:1px solid var(--border);margin-bottom:20px;}
+        .avatar-preview{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#5865f5,#c344f0);display:flex;align-items:center;justify-content:center;color:white;font-size:28px;font-weight:700;flex-shrink:0;overflow:hidden;}
+        .avatar-preview img{width:100%;height:100%;object-fit:cover;}
+        .avatar-upload-info{flex:1;}
+        .avatar-upload-info p{font-size:12px;color:var(--text-muted);margin-top:4px;}
+        .upload-btn{position:relative;overflow:hidden;}
+        .upload-btn input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;font-size:0;}
+        .tag-list{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;}
+        .tag-chip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:20px;background:var(--hover-bg);border:1px solid var(--border);font-size:12px;color:var(--text-primary);}
+        .tag-chip button{background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:14px;line-height:1;padding:0;}
+        .tag-chip button:hover{color:var(--danger);}
+        .tag-add-row{display:flex;gap:8px;margin-top:8px;}
+        .tag-add-row input{flex:1;}
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="admin-wrapper">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="16 18 22 12 16 6"></polyline>
+                        <polyline points="8 6 2 12 8 18"></polyline>
+                    </svg>
+                    <span>Admin<strong>Panel</strong></span>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="index.html" class="nav-item active">
+                    <img src="assets/icons/dashboard.svg" alt="" width="18"> Dashboard
+                </a>
+                <a href="pages/projects.html" class="nav-item">
+                    <img src="assets/icons/projects.svg" alt="" width="18"> Projets
+                </a>
+                <a href="pages/skills.html" class="nav-item">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg> Compétences
+                </a>
+                <a href="pages/messages.html" class="nav-item">
+                    <img src="assets/icons/messages.svg" alt="" width="18"> Messages
+                    <span class="badge" style="display:none;">0</span>
+                </a>
+                <a href="pages/testimonials.html" class="nav-item">
+                    <img src="assets/icons/users.svg" alt="" width="18"> Témoignages
+                </a>
+                <a href="pages/blog.html" class="nav-item">
+                    <img src="assets/icons/projects.svg" alt="" width="18"> Blog
+                </a>
+                <a href="pages/users.html" class="nav-item">
+                    <img src="assets/icons/users.svg" alt="" width="18"> Utilisateurs
+                </a>
+                <a href="pages/profile.html" class="nav-item">
+                    <img src="assets/icons/users.svg" alt="" width="18"> Portfolio Public
+                </a>
+                <a href="pages/settings.html" class="nav-item">
+                    <img src="assets/icons/settings.svg" alt="" width="18"> Paramètres
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <button onclick="logout()" class="nav-item logout-btn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                    Déconnexion
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main content -->
+        <main class="main-content">
+            <header class="top-header">
+                <button class="menu-toggle" onclick="toggleSidebar()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+                <h1 class="page-title">Dashboard</h1>
+                <div class="header-actions">
+                    <div class="search-box"><input type="text" placeholder="Rechercher..."></div>
+                    <button id="themeToggle" onclick="toggleTheme()" class="theme-toggle" aria-label="Toggle theme"></button>
+                    <div class="user-avatar" id="avatarInitials">FK</div>
+                </div>
+            </header>
+
+            <!-- Main tabs -->
+            <div class="main-tabs">
+                <button class="main-tab-btn active" onclick="switchMainTab('overview',this)">Vue d&apos;ensemble</button>
+                <button class="main-tab-btn" onclick="switchMainTab('profile',this)">Profil Public</button>
+            </div>
+
+            <div class="main-tab-pane active" id="tab-overview">
+            <div class="content-area">
+                <!-- Stats cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: rgba(88,101,245,0.15); color: #5865f5;">
+                            <img src="assets/icons/projects.svg" alt="" width="20">
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="stat-projects">—</span>
+                            <span class="stat-label">Projets</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: rgba(195,68,240,0.15); color: #c344f0;">
+                            <img src="assets/icons/messages.svg" alt="" width="20">
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="stat-messages">—</span>
+                            <span class="stat-label">Messages</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: rgba(34,197,94,0.15); color: #22c55e;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                            </svg>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="stat-blog">—</span>
+                            <span class="stat-label">Articles Blog</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: rgba(245,158,11,0.15); color: #f59e0b;">
+                            <img src="assets/icons/users.svg" alt="" width="20">
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="stat-users">—</span>
+                            <span class="stat-label">Utilisateurs</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chart -->
+                <div class="chart-section">
+                    <div class="chart-card">
+                        <h3>Visites mensuelles</h3>
+                        <canvas id="visitsChart"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <h3>Messages reçus</h3>
+                        <canvas id="messagesChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Recent activity -->
+                <div class="activity-card">
+                    <h3>Activité récente</h3>
+                    <div class="activity-list" id="activityList">
+                        <div class="activity-item"><div class="activity-dot"></div><span class="activity-text">Nouveau message de Marie L.</span><span class="activity-time">il y a 2h</span></div>
+                        <div class="activity-item"><div class="activity-dot"></div><span class="activity-text">Projet mis à jour</span><span class="activity-time">il y a 5h</span></div>
+                        <div class="activity-item"><div class="activity-dot"></div><span class="activity-text">Nouveau témoignage approuvé</span><span class="activity-time">hier</span></div>
+                        <div class="activity-item"><div class="activity-dot"></div><span class="activity-text">Article de blog publié</span><span class="activity-time">il y a 2j</span></div>
+                    </div>
+                </div>
+            </div>
+            </div><!-- end tab-overview -->
+
+            <!-- Profile Tab -->
+            <div class="main-tab-pane" id="tab-profile">
+                <div class="profile-tab-content">
+
+                    <!-- Avatar upload -->
+                    <div class="avatar-upload-area">
+                        <div class="avatar-preview" id="avatarPreview"><span id="avatarInitialsBig">FK</span></div>
+                        <div class="avatar-upload-info">
+                            <strong style="color:var(--text-primary);font-size:14px;">Photo de profil</strong>
+                            <p>JPG, PNG ou WebP &mdash; max 2 MB. Sera affichée sur la page d&apos;accueil.</p>
+                            <button class="btn-secondary upload-btn" style="margin-top:8px;">
+                                Changer la photo
+                                <input type="file" id="avatarFileInput" accept="image/*" onchange="handleAvatarUpload(this)">
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Sub-tabs -->
+                    <div class="sub-tabs">
+                        <button class="sub-tab-btn active" onclick="switchSubTab('identity',this)">Identité</button>
+                        <button class="sub-tab-btn" onclick="switchSubTab('hero',this)">Hero</button>
+                        <button class="sub-tab-btn" onclick="switchSubTab('about',this)">À propos</button>
+                        <button class="sub-tab-btn" onclick="switchSubTab('stats',this)">Statistiques</button>
+                        <button class="sub-tab-btn" onclick="switchSubTab('contact',this)">Contact &amp; Réseaux</button>
+                    </div>
+
+                    <div id="sub-identity" class="sub-tab-pane active">
+                        <div class="form-card">
+                            <div class="form-group"><label>Nom complet</label><input type="text" id="p_fullName" placeholder="Franck Eddie KEMTA"></div>
+                            <div class="form-group"><label>Titre / Spécialité</label><input type="text" id="p_jobTitle" placeholder="Développeur Full-Stack"></div>
+                            <div class="form-group">
+                                <label>Technologies (tags)</label>
+                                <div class="tag-list" id="p_techTagsList"></div>
+                                <div class="tag-add-row">
+                                    <input type="text" id="p_newTag" placeholder="Ajouter un tag..." onkeydown="if(event.key==='Enter'){event.preventDefault();addProfileTag();}">
+                                    <button type="button" class="btn-secondary" onclick="addProfileTag()">Ajouter</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="sub-hero" class="sub-tab-pane">
+                        <div class="form-card">
+                            <div class="form-group"><label>Badge expérience</label><input type="text" id="p_heroBadgeExp" placeholder="3+ ans d&apos;expérience"></div>
+                            <div class="form-group"><label>Badge projets</label><input type="text" id="p_heroBadgeProjects" placeholder="20+ projets livrés"></div>
+                        </div>
+                    </div>
+
+                    <div id="sub-about" class="sub-tab-pane">
+                        <div class="form-card">
+                            <div class="form-group"><label>Paragraphe 1 (accroche)</label><textarea id="p_bio1" rows="3"></textarea></div>
+                            <div class="form-group"><label>Paragraphe 2 (compétences clés)</label><textarea id="p_bio2" rows="3"></textarea></div>
+                            <div class="form-group"><label>Paragraphe 3 (valeurs / vision)</label><textarea id="p_bio3" rows="3"></textarea></div>
+                        </div>
+                    </div>
+
+                    <div id="sub-stats" class="sub-tab-pane">
+                        <div class="form-card">
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                                <div class="form-group"><label>Années d&apos;expérience</label><input type="text" id="p_yearsExp" placeholder="3+"></div>
+                                <div class="form-group"><label>Projets livrés</label><input type="text" id="p_projectsCount" placeholder="20+"></div>
+                                <div class="form-group"><label>Stat fun (valeur)</label><input type="text" id="p_funStat" placeholder="∞"></div>
+                                <div class="form-group"><label>Stat fun (libellé)</label><input type="text" id="p_funStatLabel" placeholder="Cafés bus"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="sub-contact" class="sub-tab-pane">
+                        <div class="form-card">
+                            <div class="form-group"><label>Email de contact</label><input type="email" id="p_contactEmail"></div>
+                            <div class="form-group"><label>Localisation</label><input type="text" id="p_location" placeholder="Yaoundé, Cameroun"></div>
+                            <div class="form-group"><label>Téléphone</label><input type="text" id="p_phone"></div>
+                        </div>
+                        <div class="form-card">
+                            <h3>Réseaux sociaux</h3>
+                            <div class="form-group"><label>GitHub</label><input type="url" id="p_github"></div>
+                            <div class="form-group"><label>LinkedIn</label><input type="url" id="p_linkedin"></div>
+                            <div class="form-group"><label>Twitter / X</label><input type="url" id="p_twitter"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn-primary" onclick="saveDashboardProfile()">Sauvegarder les modifications</button>
+                    </div>
+
+                </div>
+            </div><!-- end tab-profile -->
+
+        </main>
+    </div>
+
+    <script src="lib/chart.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/admin.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script>
+    let profileTags = [];
+    let currentAvatarUrl = null;
+
+    function switchMainTab(name, btn) {
+        document.querySelectorAll('.main-tab-pane').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.main-tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('tab-' + name).classList.add('active');
+        btn.classList.add('active');
+        if (name === 'profile') loadDashboardProfile();
+    }
+
+    function switchSubTab(name, btn) {
+        document.querySelectorAll('.sub-tab-pane').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.sub-tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('sub-' + name).classList.add('active');
+        btn.classList.add('active');
+    }
+
+    function renderProfileTags() {
+        document.getElementById('p_techTagsList').innerHTML = profileTags.map((t, i) =>
+            `<span class="tag-chip">${t}<button onclick="removeProfileTag(${i})" title="Supprimer">×</button></span>`
+        ).join('');
+    }
+    function addProfileTag() {
+        const input = document.getElementById('p_newTag');
+        const val = input.value.trim();
+        if (val && !profileTags.includes(val)) { profileTags.push(val); renderProfileTags(); }
+        input.value = '';
+    }
+    function removeProfileTag(i) { profileTags.splice(i, 1); renderProfileTags(); }
+
+    async function handleAvatarUpload(input) {
+        const file = input.files[0];
+        if (!file) return;
+        if (file.size > 2 * 1024 * 1024) { showNotification('Fichier trop volumineux (max 2 MB)', 'error'); return; }
+        try {
+            showNotification('Téléchargement...');
+            const url = await apiUpload('/admin/upload?bucket=portfolio', file);
+            currentAvatarUrl = url;
+            const preview = document.getElementById('avatarPreview');
+            preview.innerHTML = `<img src="${url}" alt="Avatar">`;
+            document.getElementById('avatarInitials').style.display = 'none';
+            showNotification('Photo mise à jour — pensez à sauvegarder');
+        } catch (e) { showNotification(e.message || 'Erreur upload', 'error'); }
+    }
+
+    async function loadDashboardProfile() {
+        try {
+            const data = await apiGet('/admin/settings');
+            if (!data) return;
+            const f = (id, val) => { const el = document.getElementById(id); if (el && val != null) el.value = val; };
+            f('p_fullName', data.full_name); f('p_jobTitle', data.job_title);
+            f('p_heroBadgeExp', data.hero_badge_exp); f('p_heroBadgeProjects', data.hero_badge_projects);
+            f('p_bio1', data.bio_1); f('p_bio2', data.bio_2); f('p_bio3', data.bio_3);
+            f('p_yearsExp', data.years_experience); f('p_projectsCount', data.projects_count);
+            f('p_funStat', data.fun_stat); f('p_funStatLabel', data.fun_stat_label);
+            f('p_contactEmail', data.contact_email); f('p_location', data.location); f('p_phone', data.phone);
+            f('p_github', data.github_url); f('p_linkedin', data.linkedin_url); f('p_twitter', data.twitter_url);
+            profileTags = Array.isArray(data.tech_tags) ? [...data.tech_tags] : [];
+            renderProfileTags();
+            currentAvatarUrl = data.avatar_url || null;
+            const initials = (data.full_name || 'FK').split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
+            document.getElementById('avatarInitials').textContent = initials;
+            document.getElementById('avatarInitialsBig').textContent = initials;
+            const preview = document.getElementById('avatarPreview');
+            if (currentAvatarUrl) {
+                preview.innerHTML = `<img src="${currentAvatarUrl}" alt="Avatar">`;
+            } else {
+                preview.innerHTML = `<span id="avatarInitialsBig">${initials}</span>`;
+            }
+        } catch (e) { showNotification('Impossible de charger le profil', 'error'); }
+    }
+
+    async function saveDashboardProfile() {
+        const payload = {
+            full_name: document.getElementById('p_fullName').value,
+            job_title: document.getElementById('p_jobTitle').value,
+            hero_badge_exp: document.getElementById('p_heroBadgeExp').value,
+            hero_badge_projects: document.getElementById('p_heroBadgeProjects').value,
+            bio_1: document.getElementById('p_bio1').value,
+            bio_2: document.getElementById('p_bio2').value,
+            bio_3: document.getElementById('p_bio3').value,
+            years_experience: document.getElementById('p_yearsExp').value,
+            projects_count: document.getElementById('p_projectsCount').value,
+            fun_stat: document.getElementById('p_funStat').value,
+            fun_stat_label: document.getElementById('p_funStatLabel').value,
+            contact_email: document.getElementById('p_contactEmail').value,
+            location: document.getElementById('p_location').value,
+            phone: document.getElementById('p_phone').value,
+            github_url: document.getElementById('p_github').value,
+            linkedin_url: document.getElementById('p_linkedin').value,
+            twitter_url: document.getElementById('p_twitter').value,
+            tech_tags: profileTags,
+        };
+        if (currentAvatarUrl) payload.avatar_url = currentAvatarUrl;
+        try {
+            await apiPut('/admin/settings', payload);
+            showNotification('Portfolio public mis à jour');
+            const initials = (payload.full_name || 'FK').split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
+            document.getElementById('avatarInitials').textContent = initials;
+        } catch (e) { showNotification(e.message || 'Erreur', 'error'); }
+    }
+    </script>
+</body>
+</html>

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Utilisateurs — Admin DevPortfolio</title>
+    <link rel="stylesheet" href="../css/admin.css">
+    <link rel="stylesheet" href="../css/tables.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        .role-badge{display:inline-block;padding:2px 10px;border-radius:20px;font-size:11px;font-weight:600;text-transform:uppercase;}
+        .role-admin{background:rgba(88,101,245,.15);color:#5865f5;}
+        .role-editor{background:rgba(195,68,240,.15);color:#c344f0;}
+        .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1000;align-items:center;justify-content:center;}
+        .modal-overlay.open{display:flex;}
+        .modal-box{background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:32px;width:100%;max-width:440px;}
+        .modal-box h3{margin:0 0 20px;font-size:16px;color:var(--text-primary);}
+        .modal-footer{display:flex;gap:10px;justify-content:flex-end;margin-top:20px;}
+    </style>
+</head>
+<body>
+    <div class="admin-wrapper">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header"><div class="sidebar-logo"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg><span>Admin<strong>Panel</strong></span></div></div>
+            <nav class="sidebar-nav">
+                <a href="../index.html" class="nav-item"><img src="../assets/icons/dashboard.svg" alt="" width="18"> Dashboard</a>
+                <a href="projects.html" class="nav-item"><img src="../assets/icons/projects.svg" alt="" width="18"> Projets</a>
+                <a href="skills.html" class="nav-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg> Compétences</a>
+                <a href="messages.html" class="nav-item"><img src="../assets/icons/messages.svg" alt="" width="18"> Messages</a>
+                <a href="testimonials.html" class="nav-item"><img src="../assets/icons/users.svg" alt="" width="18"> Témoignages</a>
+                <a href="blog.html" class="nav-item"><img src="../assets/icons/projects.svg" alt="" width="18"> Blog</a>
+                <a href="users.html" class="nav-item active"><img src="../assets/icons/users.svg" alt="" width="18"> Utilisateurs</a>
+                <a href="profile.html" class="nav-item"><img src="../assets/icons/users.svg" alt="" width="18"> Portfolio Public</a>
+                <a href="settings.html" class="nav-item"><img src="../assets/icons/settings.svg" alt="" width="18"> Paramètres</a>
+            </nav>
+            <div class="sidebar-footer"><button onclick="logout()" class="nav-item logout-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg> Déconnexion</button></div>
+        </aside>
+        <main class="main-content">
+            <header class="top-header">
+                <button class="menu-toggle" onclick="toggleSidebar()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+                <h1 class="page-title">Utilisateurs</h1>
+                <div class="header-actions">
+                    <button onclick="openModal()" class="btn-primary" style="font-size:13px;padding:8px 16px;">+ Nouvel utilisateur</button>
+                    <button id="themeToggle" onclick="toggleTheme()" class="theme-toggle" aria-label="Toggle theme"></button>
+                    <div class="user-avatar" id="avatarInitials">AD</div>
+                </div>
+            </header>
+            <div class="content-area">
+                <div class="data-table-wrapper">
+                    <table class="data-table">
+                        <thead><tr><th>Nom</th><th>Email</th><th>Rôle</th><th>Statut</th><th>Création</th><th>Actions</th></tr></thead>
+                        <tbody id="usersTableBody">
+                            <tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:24px;">Chargement...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal nouvel utilisateur -->
+    <div class="modal-overlay" id="userModal">
+        <div class="modal-box">
+            <h3>Nouvel utilisateur</h3>
+            <div class="form-group">
+                <label>Nom complet *</label>
+                <input type="text" id="newName" placeholder="Jean Dupont">
+            </div>
+            <div class="form-group">
+                <label>Email *</label>
+                <input type="email" id="newEmail" placeholder="jean@example.com">
+            </div>
+            <div class="form-group">
+                <label>Mot de passe *</label>
+                <input type="password" id="newPassword" placeholder="Min. 8 caractères">
+            </div>
+            <div class="form-group">
+                <label>Rôle</label>
+                <select id="newRole">
+                    <option value="admin">Administrateur</option>
+                    <option value="editor" selected>Editeur</option>
+                </select>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeModal()">Annuler</button>
+                <button class="btn-primary" onclick="createUser()">Créer</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/api.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/admin.js"></script>
+    <script>
+    function openModal() { document.getElementById('userModal').classList.add('open'); }
+    function closeModal() {
+        document.getElementById('userModal').classList.remove('open');
+        ['newName','newEmail','newPassword'].forEach(id => document.getElementById(id).value = '');
+        document.getElementById('newRole').value = 'editor';
+    }
+
+    function formatDate(iso) {
+        if (!iso) return '-';
+        return new Date(iso).toLocaleDateString('fr-FR', { day:'2-digit', month:'short', year:'numeric' });
+    }
+
+    function renderUsers(users) {
+        const tbody = document.getElementById('usersTableBody');
+        if (!users || users.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:24px;">Aucun utilisateur</td></tr>';
+            return;
+        }
+        tbody.innerHTML = users.map(u => `
+            <tr>
+                <td><strong style="color:var(--text-primary)">${u.name}</strong></td>
+                <td style="color:var(--text-secondary)">${u.email}</td>
+                <td><span class="role-badge role-${u.role}">${u.role}</span></td>
+                <td><span class="status-badge ${u.status === 'active' ? 'status-active' : ''}">${u.status === 'active' ? 'Actif' : u.status}</span></td>
+                <td style="color:var(--text-muted);font-size:12px;">${formatDate(u.created_at)}</td>
+                <td>
+                    <div class="table-actions">
+                        <button class="action-btn delete" title="Supprimer" onclick="deleteUser(${u.id}, '${u.name}')"
+                            style="color:var(--danger);">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="3 6 5 6 21 6"></polyline>
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    async function loadUsers() {
+        try {
+            const users = await apiGet('/admin/users');
+            renderUsers(users);
+        } catch (e) {
+            document.getElementById('usersTableBody').innerHTML =
+                '<tr><td colspan="6" style="text-align:center;color:var(--danger);padding:24px;">Erreur de chargement</td></tr>';
+        }
+    }
+
+    async function createUser() {
+        const name = document.getElementById('newName').value.trim();
+        const email = document.getElementById('newEmail').value.trim();
+        const password = document.getElementById('newPassword').value;
+        const role = document.getElementById('newRole').value;
+        if (!name || !email || !password) { showNotification('Tous les champs sont obligatoires', 'error'); return; }
+        if (password.length < 8) { showNotification('Mot de passe trop court (min. 8 caractères)', 'error'); return; }
+        try {
+            await apiPost('/admin/users', { name, email, password, role });
+            showNotification('Utilisateur créé avec succès');
+            closeModal();
+            loadUsers();
+        } catch (e) { showNotification(e.message || 'Erreur lors de la création', 'error'); }
+    }
+
+    async function deleteUser(id, name) {
+        if (!confirmAction(`Supprimer l'utilisateur "${name}" ?`)) return;
+        try {
+            await apiDelete(`/admin/users/${id}`);
+            showNotification('Utilisateur supprimé');
+            loadUsers();
+        } catch (e) { showNotification(e.message || 'Erreur', 'error'); }
+    }
+
+    document.getElementById('userModal').addEventListener('click', function(e) {
+        if (e.target === this) closeModal();
+    });
+
+    document.addEventListener('DOMContentLoaded', loadUsers);
+    </script>
+</body>
+</html>

@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio Public — Admin DevPortfolio</title>
+    <link rel="stylesheet" href="../css/admin.css">
+    <link rel="stylesheet" href="../css/forms.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        .avatar-upload-area{display:flex;align-items:center;gap:20px;padding:20px;background:var(--hover-bg);border-radius:var(--radius);border:1px solid var(--border);margin-bottom:24px;}
+        .avatar-preview{width:88px;height:88px;border-radius:50%;background:linear-gradient(135deg,#5865f5,#c344f0);display:flex;align-items:center;justify-content:center;color:white;font-size:30px;font-weight:700;flex-shrink:0;overflow:hidden;}
+        .avatar-preview img{width:100%;height:100%;object-fit:cover;}
+        .avatar-upload-info p{font-size:12px;color:var(--text-muted);margin-top:4px;}
+        .upload-btn{position:relative;overflow:hidden;}
+        .upload-btn input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;font-size:0;}
+        .tabs { display:flex; gap:4px; border-bottom:1px solid var(--border); margin-bottom:24px; }
+        .tab-btn { padding:8px 18px; font-size:13px; font-weight:500; color:var(--text-secondary); background:none; border:none; border-bottom:2px solid transparent; cursor:pointer; transition:color 0.2s, border-color 0.2s; }
+        .tab-btn.active { color:var(--accent); border-bottom-color:var(--accent); }
+        .tab-pane { display:none; }
+        .tab-pane.active { display:block; }
+        .tag-list { display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
+        .tag-chip { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:20px; background:var(--hover-bg); border:1px solid var(--border); font-size:12px; color:var(--text-primary); }
+        .tag-chip button { background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:14px; line-height:1; padding:0; }
+        .tag-chip button:hover { color:var(--danger); }
+        .tag-add-row { display:flex; gap:8px; margin-top:8px; }
+        .tag-add-row input { flex:1; }
+    </style>
+</head>
+<body>
+<div class="admin-wrapper">
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header"><div class="sidebar-logo"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg><span>Admin<strong>Panel</strong></span></div></div>
+        <nav class="sidebar-nav">
+            <a href="../index.html" class="nav-item"><img src="../assets/icons/dashboard.svg" alt="" width="18"> Dashboard</a>
+            <a href="projects.html" class="nav-item"><img src="../assets/icons/projects.svg" alt="" width="18"> Projets</a>
+            <a href="skills.html" class="nav-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg> Compétences</a>
+            <a href="messages.html" class="nav-item"><img src="../assets/icons/messages.svg" alt="" width="18"> Messages</a>
+            <a href="testimonials.html" class="nav-item"><img src="../assets/icons/users.svg" alt="" width="18"> Témoignages</a>
+            <a href="blog.html" class="nav-item"><img src="../assets/icons/projects.svg" alt="" width="18"> Blog</a>
+            <a href="users.html" class="nav-item"><img src="../assets/icons/users.svg" alt="" width="18"> Utilisateurs</a>
+            <a href="profile.html" class="nav-item active"><img src="../assets/icons/users.svg" alt="" width="18"> Portfolio Public</a>
+            <a href="settings.html" class="nav-item"><img src="../assets/icons/settings.svg" alt="" width="18"> Paramètres</a>
+        </nav>
+        <div class="sidebar-footer"><button onclick="logout()" class="nav-item logout-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg> Déconnexion</button></div>
+    </aside>
+
+    <main class="main-content">
+        <header class="top-header">
+            <button class="menu-toggle" onclick="toggleSidebar()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+            <h1 class="page-title">Portfolio Public</h1>
+            <div class="header-actions">
+                <button id="themeToggle" onclick="toggleTheme()" class="theme-toggle" aria-label="Toggle theme"></button>
+                <div class="user-avatar" id="avatarInitials">FK</div>
+            </div>
+        </header>
+
+        <div class="content-area">
+            <div style="max-width:720px;">
+
+                <!-- Avatar upload -->
+                <div class="avatar-upload-area">
+                    <div class="avatar-preview" id="avatarPreview"><span id="avatarInitialsBig">FK</span></div>
+                    <div class="avatar-upload-info">
+                        <strong style="color:var(--text-primary);font-size:14px;">Photo de profil</strong>
+                        <p>JPG, PNG ou WebP &mdash; max 2 MB. Affichée sur la page d&apos;accueil du portfolio.</p>
+                        <div style="display:flex;gap:10px;margin-top:10px;align-items:center;">
+                            <button class="btn-secondary upload-btn">
+                                Changer la photo
+                                <input type="file" id="avatarFileInput" accept="image/*" onchange="handleAvatarUpload(this)">
+                            </button>
+                            <button type="button" id="removeAvatarBtn" class="btn-secondary" onclick="removeAvatar()" style="display:none;color:var(--danger);">Supprimer</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tabs">
+                    <button class="tab-btn active" onclick="switchTab('identity')">Identité</button>
+                    <button class="tab-btn" onclick="switchTab('hero')">Hero</button>
+                    <button class="tab-btn" onclick="switchTab('about')">À propos</button>
+                    <button class="tab-btn" onclick="switchTab('stats')">Statistiques</button>
+                    <button class="tab-btn" onclick="switchTab('contact')">Contact & Réseaux</button>
+                </div>
+
+                <!-- Tab: Identité -->
+                <div id="tab-identity" class="tab-pane active">
+                    <div class="form-card">
+                        <h3>Informations principales</h3>
+                        <div class="form-group">
+                            <label for="fullName">Nom complet</label>
+                            <input type="text" id="fullName" placeholder="Franck Eddie KEMTA">
+                        </div>
+                        <div class="form-group">
+                            <label for="jobTitle">Titre / Spécialité</label>
+                            <input type="text" id="jobTitle" placeholder="Développeur Full-Stack · React · FastAPI">
+                        </div>
+                        <div class="form-group">
+                            <label>Technologies (tags)</label>
+                            <div class="tag-list" id="techTagsList"></div>
+                            <div class="tag-add-row">
+                                <input type="text" id="newTagInput" placeholder="Ajouter un tag..." onkeydown="if(event.key==='Enter'){event.preventDefault();addTag();}">
+                                <button type="button" class="btn-secondary" onclick="addTag()">Ajouter</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab: Hero -->
+                <div id="tab-hero" class="tab-pane">
+                    <div class="form-card">
+                        <h3>Badges flottants (section Hero)</h3>
+                        <div class="form-group">
+                            <label for="heroBadgeExp">Badge expérience</label>
+                            <input type="text" id="heroBadgeExp" placeholder="3+ ans d'expérience">
+                        </div>
+                        <div class="form-group">
+                            <label for="heroBadgeProjects">Badge projets</label>
+                            <input type="text" id="heroBadgeProjects" placeholder="20+ projets livrés">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab: À propos -->
+                <div id="tab-about" class="tab-pane">
+                    <div class="form-card">
+                        <h3>Texte de présentation (section À propos)</h3>
+                        <div class="form-group">
+                            <label for="bio1">Paragraphe 1 (accroche)</label>
+                            <textarea id="bio1" rows="3" placeholder="Développeur passionné basé à..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="bio2">Paragraphe 2 (compétences clés)</label>
+                            <textarea id="bio2" rows="3" placeholder="Spécialisé dans..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="bio3">Paragraphe 3 (valeurs / vision)</label>
+                            <textarea id="bio3" rows="3" placeholder="Toujours à l'affût..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab: Statistiques -->
+                <div id="tab-stats" class="tab-pane">
+                    <div class="form-card">
+                        <h3>Chiffres clés (section À propos + Hero)</h3>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                            <div class="form-group">
+                                <label for="yearsExp">Années d'expérience</label>
+                                <input type="text" id="yearsExp" placeholder="3+">
+                            </div>
+                            <div class="form-group">
+                                <label for="projectsCount">Projets livrés</label>
+                                <input type="text" id="projectsCount" placeholder="20+">
+                            </div>
+                            <div class="form-group">
+                                <label for="funStat">Stat fun (valeur)</label>
+                                <input type="text" id="funStat" placeholder="∞">
+                            </div>
+                            <div class="form-group">
+                                <label for="funStatLabel">Stat fun (libellé)</label>
+                                <input type="text" id="funStatLabel" placeholder="Cafés bus">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab: Contact & Réseaux -->
+                <div id="tab-contact" class="tab-pane">
+                    <div class="form-card">
+                        <h3>Coordonnées</h3>
+                        <div class="form-group">
+                            <label for="contactEmail">Email de contact</label>
+                            <input type="email" id="contactEmail" placeholder="contact@devportfolio.fr">
+                        </div>
+                        <div class="form-group">
+                            <label for="locationVal">Localisation</label>
+                            <input type="text" id="locationVal" placeholder="Paris, France">
+                        </div>
+                        <div class="form-group">
+                            <label for="phoneVal">Téléphone</label>
+                            <input type="text" id="phoneVal" placeholder="+33 6 12 34 56 78">
+                        </div>
+                    </div>
+                    <div class="form-card">
+                        <h3>Réseaux sociaux</h3>
+                        <div class="form-group">
+                            <label for="githubUrl">GitHub</label>
+                            <input type="url" id="githubUrl" placeholder="https://github.com/username">
+                        </div>
+                        <div class="form-group">
+                            <label for="linkedinUrl">LinkedIn</label>
+                            <input type="url" id="linkedinUrl" placeholder="https://linkedin.com/in/username">
+                        </div>
+                        <div class="form-group">
+                            <label for="twitterUrl">Twitter / X</label>
+                            <input type="url" id="twitterUrl" placeholder="https://twitter.com/username">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn-primary" onclick="saveProfile()">Sauvegarder les modifications</button>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script src="../js/api.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/admin.js"></script>
+<script>
+let techTags = [];
+
+function switchTab(name) {
+    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    event.currentTarget.classList.add('active');
+}
+
+function renderTags() {
+    const list = document.getElementById('techTagsList');
+    list.innerHTML = techTags.map((t, i) => `
+        <span class="tag-chip">${t}<button onclick="removeTag(${i})" title="Supprimer">×</button></span>
+    `).join('');
+}
+
+function addTag() {
+    const input = document.getElementById('newTagInput');
+    const val = input.value.trim();
+    if (val && !techTags.includes(val)) {
+        techTags.push(val);
+        renderTags();
+    }
+    input.value = '';
+}
+
+function removeTag(i) {
+    techTags.splice(i, 1);
+    renderTags();
+}
+
+let currentAvatarUrl = null;
+
+async function handleAvatarUpload(input) {
+    const file = input.files[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) { showNotification('Fichier trop volumineux (max 2 MB)', 'error'); return; }
+    try {
+        showNotification('Téléchargement en cours...');
+        const url = await apiUpload('/admin/upload?bucket=portfolio', file);
+        currentAvatarUrl = url;
+        document.getElementById('avatarPreview').innerHTML = `<img src="${url}" alt="Avatar">`;
+        document.getElementById('removeAvatarBtn').style.display = 'inline-flex';
+        showNotification('Photo mise à jour — pensez à sauvegarder');
+    } catch (e) { showNotification(e.message || 'Erreur upload', 'error'); }
+}
+
+function removeAvatar() {
+    currentAvatarUrl = null;
+    const initials = document.getElementById('avatarInitials').textContent;
+    document.getElementById('avatarPreview').innerHTML = `<span id="avatarInitialsBig">${initials}</span>`;
+    document.getElementById('removeAvatarBtn').style.display = 'none';
+}
+
+async function loadProfile() {
+    try {
+        const data = await apiGet('/admin/settings');
+        if (!data) return;
+
+        const f = (id, val) => { const el = document.getElementById(id); if (el && val != null) el.value = val; };
+
+        f('fullName', data.full_name);
+        f('jobTitle', data.job_title);
+        f('heroBadgeExp', data.hero_badge_exp);
+        f('heroBadgeProjects', data.hero_badge_projects);
+        f('bio1', data.bio_1);
+        f('bio2', data.bio_2);
+        f('bio3', data.bio_3);
+        f('yearsExp', data.years_experience);
+        f('projectsCount', data.projects_count);
+        f('funStat', data.fun_stat);
+        f('funStatLabel', data.fun_stat_label);
+        f('contactEmail', data.contact_email);
+        f('locationVal', data.location);
+        f('phoneVal', data.phone);
+        f('githubUrl', data.github_url);
+        f('linkedinUrl', data.linkedin_url);
+        f('twitterUrl', data.twitter_url);
+
+        techTags = Array.isArray(data.tech_tags) ? [...data.tech_tags] : [];
+        renderTags();
+
+        const initials = (data.full_name || 'FK').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+        document.getElementById('avatarInitials').textContent = initials;
+
+        currentAvatarUrl = data.avatar_url || null;
+        const preview = document.getElementById('avatarPreview');
+        if (currentAvatarUrl) {
+            preview.innerHTML = `<img src="${currentAvatarUrl}" alt="Avatar">`;
+            document.getElementById('removeAvatarBtn').style.display = 'inline-flex';
+        } else {
+            preview.innerHTML = `<span id="avatarInitialsBig">${initials}</span>`;
+        }
+    } catch (e) {
+        showNotification('Impossible de charger le profil', 'error');
+    }
+}
+
+async function saveProfile() {
+    const payload = {
+        avatar_url: currentAvatarUrl || null,
+        full_name: document.getElementById('fullName').value,
+        job_title: document.getElementById('jobTitle').value,
+        hero_badge_exp: document.getElementById('heroBadgeExp').value,
+        hero_badge_projects: document.getElementById('heroBadgeProjects').value,
+        bio_1: document.getElementById('bio1').value,
+        bio_2: document.getElementById('bio2').value,
+        bio_3: document.getElementById('bio3').value,
+        years_experience: document.getElementById('yearsExp').value,
+        projects_count: document.getElementById('projectsCount').value,
+        fun_stat: document.getElementById('funStat').value,
+        fun_stat_label: document.getElementById('funStatLabel').value,
+        contact_email: document.getElementById('contactEmail').value,
+        location: document.getElementById('locationVal').value,
+        phone: document.getElementById('phoneVal').value,
+        github_url: document.getElementById('githubUrl').value,
+        linkedin_url: document.getElementById('linkedinUrl').value,
+        twitter_url: document.getElementById('twitterUrl').value,
+        tech_tags: techTags,
+    };
+
+    try {
+        await apiPut('/admin/settings', payload);
+        showNotification('Portfolio public mis à jour');
+        const initials = (payload.full_name || 'FK').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+        document.getElementById('avatarInitials').textContent = initials;
+        document.getElementById('avatarInitialsBig') && (document.getElementById('avatarInitialsBig').textContent = initials);
+    } catch (e) {
+        showNotification(e.message || 'Erreur', 'error');
+    }
+}
+
+document.addEventListener('DOMContentLoaded', loadProfile);
+</script>
+</body>
+</html>

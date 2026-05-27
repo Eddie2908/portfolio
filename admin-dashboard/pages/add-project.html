@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajouter un projet — Admin DevPortfolio</title>
+    <link rel="stylesheet" href="../css/admin.css">
+    <link rel="stylesheet" href="../css/forms.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <style>
+        .img-upload-zone{border:2px dashed var(--border);border-radius:var(--radius);padding:24px;text-align:center;cursor:pointer;transition:border-color .2s,background .2s;position:relative;}
+        .img-upload-zone:hover{border-color:var(--accent);background:var(--hover-bg);}
+        .img-upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;}
+        .img-upload-zone p{color:var(--text-muted);font-size:13px;margin-top:4px;}
+        .img-preview{width:100%;max-height:200px;object-fit:cover;border-radius:calc(var(--radius) - 2px);display:none;}
+        .img-preview.visible{display:block;}
+        .img-upload-label{font-weight:500;color:var(--text-primary);font-size:14px;}
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="admin-wrapper">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header"><div class="sidebar-logo"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg><span>Admin<strong>Panel</strong></span></div></div>
+            <nav class="sidebar-nav">
+                <a href="../index.html" class="nav-item"><img src="../assets/icons/dashboard.svg" alt="" width="18"> Dashboard</a>
+                <a href="projects.html" class="nav-item active"><img src="../assets/icons/projects.svg" alt="" width="18"> Projets</a>
+                <a href="skills.html" class="nav-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg> Compétences</a>
+                <a href="messages.html" class="nav-item"><img src="../assets/icons/messages.svg" alt="" width="18"> Messages</a>
+                <a href="testimonials.html" class="nav-item"><img src="../assets/icons/users.svg" alt="" width="18"> Témoignages</a>
+                <a href="blog.html" class="nav-item"><img src="../assets/icons/projects.svg" alt="" width="18"> Blog</a>
+                <a href="users.html" class="nav-item"><img src="../assets/icons/users.svg" alt="" width="18"> Utilisateurs</a>
+                <a href="profile.html" class="nav-item"><img src="../assets/icons/users.svg" alt="" width="18"> Portfolio Public</a>
+                <a href="settings.html" class="nav-item"><img src="../assets/icons/settings.svg" alt="" width="18"> Paramètres</a>
+            </nav>
+            <div class="sidebar-footer"><button onclick="logout()" class="nav-item logout-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg> Déconnexion</button></div>
+        </aside>
+        <main class="main-content">
+            <header class="top-header">
+                <button class="menu-toggle" onclick="toggleSidebar()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+                <h1 class="page-title">Nouveau projet</h1>
+                <div class="header-actions"><button id="themeToggle" onclick="toggleTheme()" class="theme-toggle" aria-label="Toggle theme"></button><div class="user-avatar">AD</div></div>
+            </header>
+            <div class="content-area">
+                <form id="projectForm" style="max-width:640px;">
+                    <div class="form-card">
+                        <h3>Image de couverture</h3>
+                        <img id="imgPreview" class="img-preview" alt="Aperçu" style="margin-bottom:12px;">
+                        <div class="img-upload-zone" id="imgUploadZone">
+                            <input type="file" id="imgFileInput" accept="image/*" onchange="handleImageUpload(this)">
+                            <div class="img-upload-label">Glisser-déposer ou cliquer pour choisir</div>
+                            <p>JPG, PNG, WebP &mdash; max 5 MB</p>
+                        </div>
+                        <input type="hidden" id="imageUrl">
+                    </div>
+                    <div class="form-card">
+                        <h3>Informations</h3>
+                        <div class="form-group">
+                            <label for="title">Titre *</label>
+                            <input type="text" id="title" placeholder="Nom du projet" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="description">Description *</label>
+                            <textarea id="description" rows="4" placeholder="Description du projet..." required></textarea>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="category">Catégorie</label>
+                                <select id="category">
+                                    <option value="fullstack">Full-Stack</option>
+                                    <option value="frontend">Frontend</option>
+                                    <option value="backend">Backend</option>
+                                    <option value="mobile">Mobile</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="status">Statut</label>
+                                <select id="status">
+                                    <option value="draft">Brouillon</option>
+                                    <option value="published">Publié</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-card">
+                        <h3>Liens</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="demoUrl">Lien démo</label>
+                                <input type="url" id="demoUrl" placeholder="https://...">
+                            </div>
+                            <div class="form-group">
+                                <label for="githubUrl">Lien GitHub</label>
+                                <input type="url" id="githubUrl" placeholder="https://github.com/...">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="tags">Tags (séparés par virgules)</label>
+                            <input type="text" id="tags" placeholder="React, Next.js, Tailwind">
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">Enregistrer</button>
+                        <a href="projects.html" class="btn-secondary">Annuler</a>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+    <script src="../js/api.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/admin.js"></script>
+    <script>
+        document.getElementById('projectForm')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = {
+                title: document.getElementById('title').value,
+                description: document.getElementById('description').value,
+                category: document.getElementById('category').value,
+                status: document.getElementById('status').value,
+                demo_url: document.getElementById('demoUrl').value,
+                github_url: document.getElementById('githubUrl').value,
+                tags: document.getElementById('tags').value.split(',').map(t => t.trim()).filter(Boolean),
+            };
+            if (document.getElementById('imageUrl').value) {
+                data.image_url = document.getElementById('imageUrl').value;
+            }
+            try {
+                await apiPost('/admin/projects', data);
+                showNotification('Projet créé avec succès');
+                setTimeout(() => window.location.href = 'projects.html', 1000);
+            } catch (e) { showNotification('Erreur lors de la création', 'error'); }
+        });
+    async function handleImageUpload(input) {
+        const file = input.files[0];
+        if (!file) return;
+        if (file.size > 5 * 1024 * 1024) { showNotification('Image trop volumineuse (max 5 MB)', 'error'); return; }
+        try {
+            showNotification('Upload en cours...');
+            const url = await apiUpload('/admin/upload?bucket=portfolio', file);
+            document.getElementById('imageUrl').value = url;
+            const preview = document.getElementById('imgPreview');
+            preview.src = url;
+            preview.classList.add('visible');
+            showNotification('Image uploadée');
+        } catch (e) { showNotification(e.message || 'Erreur upload', 'error'); }
+    }
+    </script>
+</body>
+</html>

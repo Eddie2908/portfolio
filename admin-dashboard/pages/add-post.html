@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nouvel article — Admin DevPortfolio</title>
+    <link rel="stylesheet" href="../css/admin.css">
+    <link rel="stylesheet" href="../css/forms.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <style>
+        .img-upload-zone{border:2px dashed var(--border);border-radius:var(--radius);padding:20px;text-align:center;cursor:pointer;transition:border-color .2s,background .2s;position:relative;}
+        .img-upload-zone:hover{border-color:var(--accent);background:var(--hover-bg);}
+        .img-upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;}
+        .img-preview{width:100%;max-height:180px;object-fit:cover;border-radius:calc(var(--radius) - 2px);margin-bottom:12px;display:none;}
+        .img-preview.visible{display:block;}
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="admin-wrapper">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header"><div class="sidebar-logo"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg><span>Admin<strong>Panel</strong></span></div></div>
+            <nav class="sidebar-nav">
+                <a href="../index.html" class="nav-item"><img src="../assets/icons/dashboard.svg" alt="" width="18"> Dashboard</a>
+                <a href="projects.html" class="nav-item"><img src="../assets/icons/projects.svg" alt="" width="18"> Projets</a>
+                <a href="skills.html" class="nav-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg> Compétences</a>
+                <a href="messages.html" class="nav-item"><img src="../assets/icons/messages.svg" alt="" width="18"> Messages</a>
+                <a href="testimonials.html" class="nav-item"><img src="../assets/icons/users.svg" alt="" width="18"> Témoignages</a>
+                <a href="blog.html" class="nav-item active"><img src="../assets/icons/projects.svg" alt="" width="18"> Blog</a>
+                <a href="users.html" class="nav-item"><img src="../assets/icons/users.svg" alt="" width="18"> Utilisateurs</a>
+                <a href="profile.html" class="nav-item"><img src="../assets/icons/users.svg" alt="" width="18"> Portfolio Public</a>
+                <a href="settings.html" class="nav-item"><img src="../assets/icons/settings.svg" alt="" width="18"> Paramètres</a>
+            </nav>
+            <div class="sidebar-footer"><button onclick="logout()" class="nav-item logout-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg> Déconnexion</button></div>
+        </aside>
+        <main class="main-content">
+            <header class="top-header">
+                <button class="menu-toggle" onclick="toggleSidebar()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+                <h1 class="page-title">Nouvel article</h1>
+                <div class="header-actions"><button id="themeToggle" onclick="toggleTheme()" class="theme-toggle" aria-label="Toggle theme"></button><div class="user-avatar">AD</div></div>
+            </header>
+            <div class="content-area">
+                <form id="postForm" style="max-width:720px;">
+                    <div class="form-card">
+                        <h3>Image de couverture</h3>
+                        <img id="coverPreview" class="img-preview" alt="Aperçu">
+                        <div class="img-upload-zone">
+                            <input type="file" id="coverFileInput" accept="image/*" onchange="handleCoverUpload(this)">
+                            <strong style="color:var(--text-primary);font-size:14px;">Glisser-déposer ou cliquer</strong>
+                            <p style="color:var(--text-muted);font-size:12px;margin-top:4px;">JPG, PNG, WebP &mdash; max 5 MB</p>
+                        </div>
+                        <input type="hidden" id="coverImageUrl">
+                    </div>
+                    <div class="form-card">
+                        <h3>Contenu</h3>
+                        <div class="form-group">
+                            <label for="title">Titre *</label>
+                            <input type="text" id="title" placeholder="Titre de l'article" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="slug">Slug</label>
+                            <input type="text" id="slug" placeholder="url-de-larticle">
+                        </div>
+                        <div class="form-group">
+                            <label for="excerpt">Extrait</label>
+                            <textarea id="excerpt" rows="2" placeholder="Résumé court..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="content">Contenu (Markdown) *</label>
+                            <textarea id="content" rows="14" placeholder="# Mon article..." style="font-family:monospace;font-size:13px;" required></textarea>
+                        </div>
+                    </div>
+                    <div class="form-card">
+                        <h3>Métadonnées</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="category">Catégorie</label>
+                                <select id="category">
+                                    <option value="frontend">Frontend</option>
+                                    <option value="backend">Backend</option>
+                                    <option value="devops">DevOps</option>
+                                    <option value="design">Design</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="status">Statut</label>
+                                <select id="status">
+                                    <option value="draft">Brouillon</option>
+                                    <option value="published">Publié</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="tags">Tags (séparés par virgules)</label>
+                            <input type="text" id="tags" placeholder="React, Next.js, Tutorial">
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">Publier</button>
+                        <a href="blog.html" class="btn-secondary">Annuler</a>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+    <script src="../js/api.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/admin.js"></script>
+    <script src="../js/utils.js"></script>
+    <script>
+        const postId = new URLSearchParams(window.location.search).get('id');
+
+        const titleInput = document.getElementById('title');
+        const slugInput = document.getElementById('slug');
+        titleInput?.addEventListener('input', () => { slugInput.value = slugify(titleInput.value); });
+
+        async function loadPostForEdit(id) {
+            try {
+                const post = await apiGet(`/admin/blog/${id}`);
+                if (!post) return;
+                document.querySelector('.page-title').textContent = 'Modifier l\'article';
+                document.querySelector('[type=submit]').textContent = 'Enregistrer';
+                document.getElementById('title').value = post.title || '';
+                document.getElementById('slug').value = post.slug || '';
+                document.getElementById('excerpt').value = post.excerpt || '';
+                document.getElementById('content').value = post.content || '';
+                document.getElementById('category').value = post.category || 'frontend';
+                document.getElementById('status').value = post.status || 'draft';
+                document.getElementById('tags').value = (post.tags || []).join(', ');
+                if (post.image_url) {
+                    document.getElementById('coverImageUrl').value = post.image_url;
+                    const preview = document.getElementById('coverPreview');
+                    preview.src = post.image_url;
+                    preview.classList.add('visible');
+                }
+            } catch (e) { showNotification('Erreur de chargement de l\'article', 'error'); }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (postId) loadPostForEdit(postId);
+        });
+
+        document.getElementById('postForm')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = {
+                title: document.getElementById('title').value,
+                slug: document.getElementById('slug').value || slugify(document.getElementById('title').value),
+                excerpt: document.getElementById('excerpt').value,
+                content: document.getElementById('content').value,
+                category: document.getElementById('category').value,
+                status: document.getElementById('status').value,
+                tags: document.getElementById('tags').value.split(',').map(t => t.trim()).filter(Boolean),
+            };
+            const coverUrl = document.getElementById('coverImageUrl').value;
+            if (coverUrl) data.image_url = coverUrl;
+            try {
+                if (postId) {
+                    await apiPut(`/admin/blog/${postId}`, data);
+                    showNotification('Article mis à jour');
+                } else {
+                    await apiPost('/admin/blog', data);
+                    showNotification('Article créé');
+                }
+                setTimeout(() => window.location.href = 'blog.html', 1000);
+            } catch (e) { showNotification(e.message || 'Erreur', 'error'); }
+        });
+
+        async function handleCoverUpload(input) {
+            const file = input.files[0];
+            if (!file) return;
+            if (file.size > 5 * 1024 * 1024) { showNotification('Image trop volumineuse (max 5 MB)', 'error'); return; }
+            try {
+                showNotification('Upload en cours...');
+                const url = await apiUpload('/admin/upload?bucket=portfolio', file);
+                document.getElementById('coverImageUrl').value = url;
+                const preview = document.getElementById('coverPreview');
+                preview.src = url;
+                preview.classList.add('visible');
+                showNotification('Image uploadée');
+            } catch (e) { showNotification(e.message || 'Erreur upload', 'error'); }
+        }
+    </script>
+</body>
+</html>

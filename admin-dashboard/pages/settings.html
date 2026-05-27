@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paramètres — Admin DevPortfolio</title>
+    <link rel="stylesheet" href="../css/admin.css">
+    <link rel="stylesheet" href="../css/forms.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="admin-wrapper">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header"><div class="sidebar-logo"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg><span>Admin<strong>Panel</strong></span></div></div>
+            <nav class="sidebar-nav">
+                <a href="../index.html" class="nav-item"><img src="../assets/icons/dashboard.svg" alt="" width="18"> Dashboard</a>
+                <a href="projects.html" class="nav-item"><img src="../assets/icons/projects.svg" alt="" width="18"> Projets</a>
+                <a href="skills.html" class="nav-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg> Compétences</a>
+                <a href="messages.html" class="nav-item"><img src="../assets/icons/messages.svg" alt="" width="18"> Messages</a>
+                <a href="testimonials.html" class="nav-item"><img src="../assets/icons/users.svg" alt="" width="18"> Témoignages</a>
+                <a href="blog.html" class="nav-item"><img src="../assets/icons/projects.svg" alt="" width="18"> Blog</a>
+                <a href="users.html" class="nav-item"><img src="../assets/icons/users.svg" alt="" width="18"> Utilisateurs</a>
+                <a href="profile.html" class="nav-item"><img src="../assets/icons/users.svg" alt="" width="18"> Portfolio Public</a>
+                <a href="settings.html" class="nav-item active"><img src="../assets/icons/settings.svg" alt="" width="18"> Paramètres</a>
+            </nav>
+            <div class="sidebar-footer"><button onclick="logout()" class="nav-item logout-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg> Déconnexion</button></div>
+        </aside>
+        <main class="main-content">
+            <header class="top-header">
+                <button class="menu-toggle" onclick="toggleSidebar()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+                <h1 class="page-title">Paramètres</h1>
+                <div class="header-actions"><button id="themeToggle" onclick="toggleTheme()" class="theme-toggle" aria-label="Toggle theme"></button><div class="user-avatar">AD</div></div>
+            </header>
+            <div class="content-area">
+                <form id="settingsForm" style="max-width:700px;">
+
+                    <!-- GÉNÉRAL -->
+                    <div class="form-card">
+                        <h3>Général</h3>
+                        <div class="form-group">
+                            <label for="siteName">Nom du site</label>
+                            <input type="text" id="siteName" placeholder="DevPortfolio">
+                        </div>
+                        <div class="form-group">
+                            <label for="siteDesc">Description du site</label>
+                            <textarea id="siteDesc" rows="2" placeholder="Portfolio développeur Full-Stack"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="contactEmail">Email de contact</label>
+                            <input type="email" id="contactEmail" placeholder="contact@devportfolio.fr">
+                        </div>
+                    </div>
+
+                    <!-- PROFIL PORTFOLIO -->
+                    <div class="form-card">
+                        <h3>Profil Portfolio</h3>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                            <div class="form-group">
+                                <label for="fullName">Nom complet</label>
+                                <input type="text" id="fullName" placeholder="Franck Eddie KEMTA">
+                            </div>
+                            <div class="form-group">
+                                <label for="jobTitle">Titre / Poste</label>
+                                <input type="text" id="jobTitle" placeholder="Développeur Full-Stack · React · FastAPI">
+                            </div>
+                        </div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                            <div class="form-group">
+                                <label for="location">Localisation</label>
+                                <input type="text" id="location" placeholder="Yaoundé, Cameroun">
+                            </div>
+                            <div class="form-group">
+                                <label for="phone">Téléphone</label>
+                                <input type="text" id="phone" placeholder="+237 6 99 99 58 32">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="avatarUrl">URL de l'avatar</label>
+                            <input type="url" id="avatarUrl" placeholder="https://...">
+                        </div>
+                    </div>
+
+                    <!-- BIOGRAPHIES -->
+                    <div class="form-card">
+                        <h3>Biographies</h3>
+                        <div class="form-group">
+                            <label for="bio1">Biographie 1</label>
+                            <textarea id="bio1" rows="2" placeholder="Présentation principale..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="bio2">Biographie 2</label>
+                            <textarea id="bio2" rows="2" placeholder="Spécialités techniques..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="bio3">Biographie 3</label>
+                            <textarea id="bio3" rows="2" placeholder="Veille technologique..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- STATISTIQUES HERO -->
+                    <div class="form-card">
+                        <h3>Statistiques &amp; Hero</h3>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                            <div class="form-group">
+                                <label for="yearsExp">Années d'expérience</label>
+                                <input type="text" id="yearsExp" placeholder="3+">
+                            </div>
+                            <div class="form-group">
+                                <label for="projectsCount">Nombre de projets</label>
+                                <input type="text" id="projectsCount" placeholder="20+">
+                            </div>
+                        </div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                            <div class="form-group">
+                                <label for="funStat">Stat fun (valeur)</label>
+                                <input type="text" id="funStat" placeholder="∞">
+                            </div>
+                            <div class="form-group">
+                                <label for="funStatLabel">Stat fun (label)</label>
+                                <input type="text" id="funStatLabel" placeholder="Cafés bus">
+                            </div>
+                        </div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                            <div class="form-group">
+                                <label for="heroBadgeExp">Badge Hero — Expérience</label>
+                                <input type="text" id="heroBadgeExp" placeholder="3+ ans d'expérience">
+                            </div>
+                            <div class="form-group">
+                                <label for="heroBadgeProjects">Badge Hero — Projets</label>
+                                <input type="text" id="heroBadgeProjects" placeholder="20+ projets livrés">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- RÉSEAUX SOCIAUX -->
+                    <div class="form-card">
+                        <h3>Réseaux sociaux</h3>
+                        <div class="form-group">
+                            <label for="githubUrl">GitHub URL</label>
+                            <input type="url" id="githubUrl" placeholder="https://github.com/username">
+                        </div>
+                        <div class="form-group">
+                            <label for="linkedinUrl">LinkedIn URL</label>
+                            <input type="url" id="linkedinUrl" placeholder="https://linkedin.com/in/username">
+                        </div>
+                        <div class="form-group">
+                            <label for="twitterUrl">Twitter / X URL</label>
+                            <input type="url" id="twitterUrl" placeholder="https://twitter.com/username">
+                        </div>
+                    </div>
+
+                    <!-- TECHNOLOGIES -->
+                    <div class="form-card">
+                        <h3>Technologies (tags)</h3>
+                        <div class="form-group">
+                            <label for="techTags">Tags séparés par des virgules</label>
+                            <input type="text" id="techTags" placeholder="React, Next.js, TypeScript, Python, FastAPI">
+                            <small style="color:var(--text-muted);font-size:11px;">Ex : React, Next.js, TypeScript, Python, FastAPI, PostgreSQL</small>
+                        </div>
+                    </div>
+
+                    <!-- SEO -->
+                    <div class="form-card">
+                        <h3>SEO &amp; Métadonnées</h3>
+                        <div class="form-group">
+                            <label for="metaTitle">Titre meta</label>
+                            <input type="text" id="metaTitle" placeholder="DevPortfolio — Développeur Full-Stack">
+                        </div>
+                        <div class="form-group">
+                            <label for="metaDesc">Description meta</label>
+                            <textarea id="metaDesc" rows="2" placeholder="Description meta..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="ogImage">Image OG (URL)</label>
+                            <input type="url" id="ogImage" placeholder="https://...">
+                        </div>
+                    </div>
+
+                    <!-- INTÉGRATIONS -->
+                    <div class="form-card">
+                        <h3>Intégrations</h3>
+                        <div class="form-group">
+                            <label for="analyticsId">Google Analytics ID</label>
+                            <input type="text" id="analyticsId" placeholder="G-XXXXXXXXXX">
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">Sauvegarder tous les paramètres</button>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+    <script src="../js/api.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/admin.js"></script>
+    <script>
+        async function loadSettings() {
+            try {
+                const data = await apiGet('/admin/settings');
+                if (!data) return;
+                const f = (id, val) => { const el = document.getElementById(id); if (el && val != null) el.value = val; };
+                // Général
+                f('siteName', data.site_name);
+                f('siteDesc', data.site_description);
+                f('contactEmail', data.contact_email);
+                // Profil
+                f('fullName', data.full_name);
+                f('jobTitle', data.job_title);
+                f('location', data.location);
+                f('phone', data.phone);
+                f('avatarUrl', data.avatar_url);
+                // Bios
+                f('bio1', data.bio_1);
+                f('bio2', data.bio_2);
+                f('bio3', data.bio_3);
+                // Stats / Hero
+                f('yearsExp', data.years_experience);
+                f('projectsCount', data.projects_count);
+                f('funStat', data.fun_stat);
+                f('funStatLabel', data.fun_stat_label);
+                f('heroBadgeExp', data.hero_badge_exp);
+                f('heroBadgeProjects', data.hero_badge_projects);
+                // Réseaux
+                f('githubUrl', data.github_url);
+                f('linkedinUrl', data.linkedin_url);
+                f('twitterUrl', data.twitter_url);
+                // Tags
+                if (data.tech_tags) document.getElementById('techTags').value = data.tech_tags.join(', ');
+                // SEO
+                f('metaTitle', data.meta_title);
+                f('metaDesc', data.meta_description);
+                f('ogImage', data.og_image);
+                f('analyticsId', data.analytics_id);
+            } catch (e) { showNotification('Impossible de charger les paramètres', 'error'); }
+        }
+
+        const g = (id) => (document.getElementById(id)?.value || '').trim();
+
+        document.getElementById('settingsForm')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const rawTags = g('techTags');
+            const tech_tags = rawTags ? rawTags.split(',').map(t => t.trim()).filter(Boolean) : [];
+            const data = {
+                site_name: g('siteName'),
+                site_description: g('siteDesc'),
+                contact_email: g('contactEmail'),
+                full_name: g('fullName'),
+                job_title: g('jobTitle'),
+                location: g('location'),
+                phone: g('phone'),
+                avatar_url: g('avatarUrl') || null,
+                bio_1: g('bio1'),
+                bio_2: g('bio2'),
+                bio_3: g('bio3'),
+                years_experience: g('yearsExp'),
+                projects_count: g('projectsCount'),
+                fun_stat: g('funStat'),
+                fun_stat_label: g('funStatLabel'),
+                hero_badge_exp: g('heroBadgeExp'),
+                hero_badge_projects: g('heroBadgeProjects'),
+                github_url: g('githubUrl') || null,
+                linkedin_url: g('linkedinUrl') || null,
+                twitter_url: g('twitterUrl') || null,
+                tech_tags: tech_tags.length ? tech_tags : null,
+                meta_title: g('metaTitle') || null,
+                meta_description: g('metaDesc') || null,
+                og_image: g('ogImage') || null,
+                analytics_id: g('analyticsId') || null,
+            };
+            try {
+                await apiPut('/admin/settings', data);
+                showNotification('Paramètres sauvegardés avec succès');
+            } catch (e) { showNotification('Erreur lors de la sauvegarde', 'error'); }
+        });
+
+        document.addEventListener('DOMContentLoaded', loadSettings);
+    </script>
+</body>
+</html>
