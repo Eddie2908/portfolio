@@ -4,7 +4,7 @@ import { useAdmin } from '@/context/AdminContext';
 import { adminService } from '@/services/admin';
 import Link from 'next/link';
 
-export default function AdminHeader({ title }) {
+export default function AdminHeader({ title, onMenuClick }: { title: any; onMenuClick?: () => void }) {
   const { admin } = useAdmin();
   const initials = admin?.name
     ? admin.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()
@@ -20,7 +20,7 @@ export default function AdminHeader({ title }) {
   return (
     <header className="h-16 flex items-center justify-between px-6 lg:px-8 border-b border-white/5 bg-dark-950/80 backdrop-blur-sm">
       <div className="flex items-center gap-4">
-        <button className="lg:hidden p-2 rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-colors">
+        <button onClick={onMenuClick} title="Ouvrir le menu" className="lg:hidden p-2 rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-colors">
           <Menu size={20} />
         </button>
         <h1 className="font-display font-semibold text-white text-lg">{title || 'Dashboard'}</h1>
