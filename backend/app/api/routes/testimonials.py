@@ -1,4 +1,3 @@
-from pathlib import Path
 from fastapi import APIRouter, BackgroundTasks, Depends, File, HTTPException, Request, UploadFile
 from app.api.dependencies import get_admin_user
 from app.database.connection import get_supabase
@@ -34,12 +33,18 @@ async def upload_testimonial_avatar(request: Request, file: UploadFile = File(..
     if len(content) > 2 * 1024 * 1024:
         raise HTTPException(status_code=400, detail="Image trop grande (max 2 Mo)")
     ext = file.filename.rsplit(".", 1)[-1].lower() if "." in (file.filename or "") else "jpg"
-    filename = f"{uuid.uuid4()}.{ext}"
-    upload_dir = Path("static/uploads/testimonials")
-    upload_dir.mkdir(parents=True, exist_ok=True)
-    (upload_dir / filename).write_bytes(content)
-    base_url = str(request.base_url).rstrip("/")
-    return {"url": f"{base_url}/static/uploads/testimonials/{filename}"}
+    filename = f"avatars/{uuid.uuid4()}.{ext}"
+    supabase = get_supabase()
+    try:
+        supabase.storage.from_("testimonials").upload(
+            filename,
+            content,
+            {"content-type": file.content_type},
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erreur upload : {str(e)}")
+    url = supabase.storage.from_("testimonials").get_public_url(filename)
+    return {"url": url}
 
 
 @router.post("", status_code=201)
