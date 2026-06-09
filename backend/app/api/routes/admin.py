@@ -1,4 +1,3 @@
-from pathlib import Path
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, UploadFile, File
 import uuid
 from app.api.dependencies import get_admin_user, get_super_admin
@@ -38,14 +37,19 @@ async def upload_file(
         )
 
     ext = file.filename.rsplit(".", 1)[-1].lower() if "." in (file.filename or "") else "bin"
-    filename = f"{uuid.uuid4()}.{ext}"
+    filename = f"uploads/{uuid.uuid4()}.{ext}"
 
-    upload_dir = Path("static/uploads") / bucket
-    upload_dir.mkdir(parents=True, exist_ok=True)
-    (upload_dir / filename).write_bytes(content)
+    supabase = get_supabase()
+    try:
+        supabase.storage.from_(bucket).upload(
+            filename,
+            content,
+            {"content-type": file.content_type},
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erreur upload : {str(e)}")
 
-    base_url = str(request.base_url).rstrip("/")
-    url = f"{base_url}/static/uploads/{bucket}/{filename}"
+    url = supabase.storage.from_(bucket).get_public_url(filename)
     return {"url": url, "filename": filename}
 
 
