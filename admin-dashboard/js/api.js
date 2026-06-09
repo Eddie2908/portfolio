@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:8000/api';
+const API_URL = window.APP_CONFIG?.API_URL || (window.location.hostname === 'localhost' ? 'http://localhost:8000/api' : 'https://your-api-domain.onrender.com/api');
 
 function getToken() {
   return localStorage.getItem('admin_token');

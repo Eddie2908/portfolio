@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from jose import JWTError, jwt
 import bcrypt
 
@@ -13,9 +13,22 @@ def verify_password(plain: str, hashed: str) -> bool:
     return bcrypt.checkpw(plain.encode("utf-8"), hashed.encode("utf-8"))
 
 
+def validate_password_strength(password: str) -> str | None:
+    """Returns an error message if password is too weak, None if OK."""
+    if len(password) < 8:
+        return "Le mot de passe doit contenir au moins 8 caractères"
+    if not any(c.isupper() for c in password):
+        return "Le mot de passe doit contenir au moins une majuscule"
+    if not any(c.islower() for c in password):
+        return "Le mot de passe doit contenir au moins une minuscule"
+    if not any(c.isdigit() for c in password):
+        return "Le mot de passe doit contenir au moins un chiffre"
+    return None
+
+
 def create_token(data: dict) -> str:
     to_encode = data.copy()
-    expire = datetime.utcnow() + timedelta(minutes=settings.JWT_EXPIRE_MINUTES)
+    expire = datetime.now(timezone.utc) + timedelta(minutes=settings.JWT_EXPIRE_MINUTES)
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, settings.JWT_SECRET, algorithm=settings.JWT_ALGORITHM)
 

@@ -1,7 +1,7 @@
 from pathlib import Path
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, UploadFile, File
 import uuid
-from app.api.dependencies import get_admin_user
+from app.api.dependencies import get_admin_user, get_super_admin
 from app.database.connection import get_supabase
 from app.schemas.project_schema import ProjectCreate, ProjectUpdate
 from app.schemas.testimonial_schema import TestimonialCreate, TestimonialUpdate
@@ -23,13 +23,22 @@ async def upload_file(
     bucket: str = Query("portfolio", description="Subfolder name"),
     admin: dict = Depends(get_admin_user),
 ):
+    from app.core.config import settings as app_settings
+
     ALLOWED_TYPES = {"image/jpeg", "image/png", "image/webp", "image/gif", "image/svg+xml"}
     if file.content_type not in ALLOWED_TYPES:
         raise HTTPException(status_code=400, detail="Type de fichier non autorisé")
 
+    max_size = app_settings.MAX_UPLOAD_SIZE_MB * 1024 * 1024
+    content = await file.read()
+    if len(content) > max_size:
+        raise HTTPException(
+            status_code=413,
+            detail=f"Fichier trop volumineux. Maximum : {app_settings.MAX_UPLOAD_SIZE_MB} Mo",
+        )
+
     ext = file.filename.rsplit(".", 1)[-1].lower() if "." in (file.filename or "") else "bin"
     filename = f"{uuid.uuid4()}.{ext}"
-    content = await file.read()
 
     upload_dir = Path("static/uploads") / bucket
     upload_dir.mkdir(parents=True, exist_ok=True)
@@ -123,8 +132,8 @@ async def admin_update_testimonial(tid: str, data: TestimonialUpdate, admin: dic
     update_data = data.model_dump(exclude_none=True)
     try:
         response = supabase.table("testimonials").update(update_data).eq("id", tid).execute()
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    except Exception:
+        raise HTTPException(status_code=500, detail="Erreur serveur")
     if not response.data:
         raise HTTPException(status_code=404, detail="Témoignage non trouvé")
     return response.data[0]
@@ -135,8 +144,8 @@ async def admin_delete_testimonial(tid: str, admin: dict = Depends(get_admin_use
     supabase = get_supabase()
     try:
         supabase.table("testimonials").delete().eq("id", tid).execute()
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    except Exception:
+        raise HTTPException(status_code=500, detail="Erreur serveur")
     return {"message": "Témoignage supprimé"}
 
 
@@ -164,7 +173,7 @@ async def admin_get_post(post_id: str, admin: dict = Depends(get_admin_user)):
     try:
         response = supabase.table("blog_posts").select("*").eq("id", post_id).limit(1).execute()
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Erreur serveur: {str(e)}")
+        raise HTTPException(status_code=500, detail="Erreur serveur")
     if not response.data:
         raise HTTPException(status_code=404, detail="Article non trouvé")
     return response.data[0]
@@ -180,8 +189,8 @@ async def admin_create_post(data: BlogPostCreate, admin: dict = Depends(get_admi
         post_data.pop("author_id", None)
     try:
         response = supabase.table("blog_posts").insert(post_data).execute()
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Erreur lors de la création: {str(e)}")
+    except Exception:
+        raise HTTPException(status_code=500, detail="Erreur lors de la création")
     if not response.data:
         raise HTTPException(status_code=500, detail="Erreur lors de la création de l'article")
     return response.data[0]
@@ -193,8 +202,8 @@ async def admin_update_post(post_id: str, data: BlogPostUpdate, admin: dict = De
     update_data = data.model_dump(exclude_none=True)
     try:
         response = supabase.table("blog_posts").update(update_data).eq("id", post_id).execute()
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Erreur lors de la mise à jour: {str(e)}")
+    except Exception:
+        raise HTTPException(status_code=500, detail="Erreur lors de la mise à jour")
     if not response.data:
         raise HTTPException(status_code=404, detail="Article non trouvé")
     return response.data[0]
@@ -205,24 +214,20 @@ async def admin_delete_post(post_id: str, admin: dict = Depends(get_admin_user))
     supabase = get_supabase()
     try:
         supabase.table("blog_posts").delete().eq("id", post_id).execute()
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Erreur lors de la suppression: {str(e)}")
+    except Exception:
+        raise HTTPException(status_code=500, detail="Erreur lors de la suppression")
     return {"message": "Article supprimé"}
 
 
 @router.get("/users")
-async def admin_get_users(admin: dict = Depends(get_admin_user)):
-    if admin.get("role") != "admin":
-        raise HTTPException(status_code=403, detail="Accès réservé aux admins")
+async def admin_get_users(admin: dict = Depends(get_super_admin)):
     supabase = get_supabase()
     response = supabase.table("users").select("id, name, email, role, status, created_at").execute()
     return response.data
 
 
 @router.post("/users", status_code=201)
-async def admin_create_user(data: UserCreate, admin: dict = Depends(get_admin_user)):
-    if admin.get("role") != "admin":
-        raise HTTPException(status_code=403, detail="Accès réservé aux admins")
+async def admin_create_user(data: UserCreate, admin: dict = Depends(get_super_admin)):
     supabase = get_supabase()
     existing = supabase.table("users").select("id").eq("email", data.email).execute()
     if existing.data:
@@ -231,13 +236,11 @@ async def admin_create_user(data: UserCreate, admin: dict = Depends(get_admin_us
         created = svc_create_user(data.name, data.email, data.password, data.role or "editor")
         return {"message": "Utilisateur créé", "id": created.get("id")}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Erreur création utilisateur: {e}")
+        raise HTTPException(status_code=500, detail="Erreur création utilisateur")
 
 
 @router.delete("/users/{user_id}")
-async def admin_delete_user(user_id: int, admin: dict = Depends(get_admin_user)):
-    if admin.get("role") != "admin":
-        raise HTTPException(status_code=403, detail="Accès réservé aux admins")
+async def admin_delete_user(user_id: int, admin: dict = Depends(get_super_admin)):
     if str(admin.get("sub")) == str(user_id):
         raise HTTPException(status_code=400, detail="Impossible de supprimer votre propre compte")
     supabase = get_supabase()

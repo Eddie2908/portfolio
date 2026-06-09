@@ -21,8 +21,8 @@ async def send_message(request: Request, data: ContactCreate, background_tasks: 
     }
     try:
         response = supabase.table("messages").insert(message).execute()
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Impossible d'enregistrer le message: {str(e)}")
+    except Exception:
+        raise HTTPException(status_code=500, detail="Impossible d'enregistrer le message")
 
     background_tasks.add_task(send_notification_email, data)
 
@@ -39,12 +39,12 @@ async def get_messages(
     offset = (page - 1) * limit
     response = (
         supabase.table("messages")
-        .select("*")
+        .select("*", count="exact")
         .order("created_at", desc=True)
         .range(offset, offset + limit - 1)
         .execute()
     )
-    return response.data
+    return {"items": response.data, "total": response.count}
 
 
 @router.get("/{message_id}")
@@ -52,8 +52,8 @@ async def get_message(message_id: str, admin: dict = Depends(get_admin_user)):
     supabase = get_supabase()
     try:
         response = supabase.table("messages").select("*").eq("id", message_id).limit(1).execute()
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Erreur serveur: {str(e)}")
+    except Exception:
+        raise HTTPException(status_code=500, detail="Erreur serveur")
     if not response.data:
         raise HTTPException(status_code=404, detail="Message non trouvé")
     return response.data[0]
@@ -64,8 +64,8 @@ async def mark_as_read(message_id: str, admin: dict = Depends(get_admin_user)):
     supabase = get_supabase()
     try:
         supabase.table("messages").update({"status": "read"}).eq("id", message_id).execute()
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Erreur serveur: {str(e)}")
+    except Exception:
+        raise HTTPException(status_code=500, detail="Erreur serveur")
     return {"message": "Marqué comme lu"}
 
 
@@ -74,6 +74,6 @@ async def delete_message(message_id: str, admin: dict = Depends(get_admin_user))
     supabase = get_supabase()
     try:
         supabase.table("messages").delete().eq("id", message_id).execute()
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Erreur serveur: {str(e)}")
+    except Exception:
+        raise HTTPException(status_code=500, detail="Erreur serveur")
     return {"message": "Message supprimé"}

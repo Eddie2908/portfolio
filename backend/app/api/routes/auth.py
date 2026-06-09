@@ -1,12 +1,13 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel
 from typing import Optional
 
 from app.api.dependencies import get_current_user
+from app.middleware.rate_limit import limiter
 from app.database.connection import get_supabase
 from app.schemas.user_schema import UserLogin, UserCreate, TokenResponse
 from app.services.auth_service import authenticate_user, create_user
-from app.utils.security import hash_password, verify_password
+from app.utils.security import hash_password, verify_password, validate_password_strength
 
 router = APIRouter()
 
@@ -23,7 +24,8 @@ class PasswordChange(BaseModel):
 
 
 @router.post("/login", response_model=TokenResponse)
-async def login(data: UserLogin):
+@limiter.limit("5/minute")
+async def login(request: Request, data: UserLogin):
     result = authenticate_user(data.email, data.password)
     if not result:
         raise HTTPException(
@@ -37,6 +39,10 @@ async def login(data: UserLogin):
 async def register(data: UserCreate, admin: dict = Depends(get_current_user)):
     if admin.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Seul un admin peut créer des comptes")
+
+    pwd_error = validate_password_strength(data.password)
+    if pwd_error:
+        raise HTTPException(status_code=400, detail=pwd_error)
 
     supabase = get_supabase()
     existing = supabase.table("users").select("id").eq("email", data.email).execute()
@@ -74,6 +80,10 @@ async def update_profile(data: ProfileUpdate, current_user: dict = Depends(get_c
 
 @router.put("/change-password")
 async def change_password(data: PasswordChange, current_user: dict = Depends(get_current_user)):
+    pwd_error = validate_password_strength(data.new_password)
+    if pwd_error:
+        raise HTTPException(status_code=400, detail=pwd_error)
+
     supabase = get_supabase()
     user = supabase.table("users").select("password_hash").eq("id", current_user["sub"]).single().execute()
 

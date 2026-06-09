@@ -24,3 +24,13 @@ async def get_admin_user(current_user: dict = Depends(get_current_user)):
             detail="Accès refusé : droits insuffisants",
         )
     return current_user
+
+
+async def get_super_admin(current_user: dict = Depends(get_current_user)):
+    """Strictly admin-only (not editors). Use for user management and critical settings."""
+    if current_user.get("role") != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Accès réservé aux administrateurs",
+        )
+    return current_user

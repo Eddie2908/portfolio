@@ -11,6 +11,7 @@ from app.core.exceptions import global_exception_handler, http_exception_handler
 from app.api.routes import projects, contact, auth, testimonials, blog, admin, skills
 from app.middleware.rate_limit import limiter
 from app.middleware.logger import log_middleware
+from app.middleware.security_headers import security_headers_middleware
 
 app = FastAPI(
     title=settings.APP_TITLE,
@@ -30,6 +31,7 @@ app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 # Middleware (order matters: last added = first executed)
+app.add_middleware(BaseHTTPMiddleware, dispatch=security_headers_middleware)
 app.add_middleware(BaseHTTPMiddleware, dispatch=log_middleware)
 app.add_middleware(
     CORSMiddleware,

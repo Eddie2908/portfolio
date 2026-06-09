@@ -53,3 +53,5 @@ htmlcov/
 .netlify
 *.pem
 .cache/
+
+.vercel
