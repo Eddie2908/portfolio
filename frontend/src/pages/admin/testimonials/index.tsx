@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import AdminLayout from '@/components/admin/AdminLayout';
 import { Check, X, Trash2, Clock, Globe } from 'lucide-react';
 import { adminService } from '@/services/admin';
@@ -97,8 +98,10 @@ export default function AdminTestimonials() {
                 <div key={t.id} className="glass-card p-5 flex flex-col sm:flex-row sm:items-start gap-4">
                   {/* Avatar + info */}
                   <div className="flex items-start gap-3 flex-1 min-w-0">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
-                      {initials}
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center text-white text-xs font-bold flex-shrink-0 overflow-hidden ring-2 ring-white/10">
+                      {t.avatar_url
+                        ? <Image src={t.avatar_url} alt={t.name} width={40} height={40} className="w-full h-full object-cover" unoptimized />
+                        : initials}
                     </div>
                     <div className="min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
