@@ -3,10 +3,23 @@ from pydantic import BaseModel
 from typing import Optional
 
 from app.api.dependencies import get_current_user
+from app.core.config import settings
 from app.middleware.rate_limit import limiter
 from app.database.connection import get_supabase
-from app.schemas.user_schema import UserLogin, UserCreate, TokenResponse
-from app.services.auth_service import authenticate_user, create_user
+from app.schemas.user_schema import (
+    UserLogin,
+    UserCreate,
+    TokenResponse,
+    ForgotPasswordRequest,
+    ResetPasswordRequest,
+)
+from app.services.auth_service import (
+    authenticate_user,
+    create_user,
+    create_password_reset_token,
+    reset_password_with_token,
+)
+from app.services.email_service import send_password_reset_email
 from app.utils.security import hash_password, verify_password, validate_password_strength
 
 router = APIRouter()
@@ -33,6 +46,35 @@ async def login(request: Request, data: UserLogin):
             detail="Email ou mot de passe incorrect",
         )
     return result
+
+
+@router.post("/forgot-password")
+@limiter.limit("3/minute")
+async def forgot_password(request: Request, data: ForgotPasswordRequest):
+    result = create_password_reset_token(data.email)
+    # If the user exists, send the email. We always return the same response
+    # to avoid leaking which emails are registered.
+    if result:
+        raw_token, user = result
+        reset_link = f"{settings.ADMIN_URL}/reset-password.html?token={raw_token}"
+        try:
+            await send_password_reset_email(user["email"], user["name"], reset_link)
+        except RuntimeError as e:
+            raise HTTPException(status_code=500, detail=str(e))
+    return {"message": "Si un compte existe pour cet email, un lien de réinitialisation a été envoyé."}
+
+
+@router.post("/reset-password")
+@limiter.limit("5/minute")
+async def reset_password(request: Request, data: ResetPasswordRequest):
+    pwd_error = validate_password_strength(data.new_password)
+    if pwd_error:
+        raise HTTPException(status_code=400, detail=pwd_error)
+
+    success = reset_password_with_token(data.token, data.new_password)
+    if not success:
+        raise HTTPException(status_code=400, detail="Lien invalide ou expiré")
+    return {"message": "Mot de passe réinitialisé avec succès"}
 
 
 @router.post("/register", status_code=status.HTTP_201_CREATED)

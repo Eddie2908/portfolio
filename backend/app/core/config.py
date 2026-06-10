@@ -38,6 +38,12 @@ class Settings(BaseSettings):
     SMTP_PASSWORD: str = ""
     CONTACT_EMAIL: str = ""
 
+    # Base URL of the admin dashboard (used for password reset links)
+    ADMIN_URL: str = "http://localhost:5500/admin-dashboard"
+
+    # Lifetime of a password reset token, in minutes
+    RESET_TOKEN_EXPIRE_MINUTES: int = 60
+
     # Upload
     MAX_UPLOAD_SIZE_MB: int = 5
 

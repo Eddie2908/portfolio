@@ -8,6 +8,7 @@ import Head from 'next/head';
 import { useTheme } from '@/context/ThemeContext';
 import Cursor from '@/components/ui/Cursor';
 import PageTransition from '@/components/ui/PageTransition';
+import { Analytics } from '@vercel/analytics/react';
 import type { AppProps } from 'next/app';
 import type { NextPage } from 'next';
 import type { ReactElement, ReactNode } from 'react';
@@ -54,6 +55,7 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
               {getLayout(<Component {...pageProps} />)}
             </PageTransition>
             <AppToaster />
+            <Analytics />
           </PortfolioDataProvider>
         </AdminProvider>
       </ThemeProvider>

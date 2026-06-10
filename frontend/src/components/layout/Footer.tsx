@@ -19,7 +19,7 @@ const footerLinks = [
   ]},
   { group: 'Ressources', links: [
     { label: 'CV / Resume', href: '/assets/cv.pdf', external: true },
-    { label: 'Admin',       href: '/admin' },
+    // { label: 'Admin',       href: '/admin' },
   ]},
 ];
 
