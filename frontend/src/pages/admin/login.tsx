@@ -77,6 +77,15 @@ export default function AdminLogin() {
             <Button type="submit" loading={loading} className="w-full justify-center">
               Se connecter
             </Button>
+
+            <p className="text-center mt-4">
+              <a
+                href="/admin-dashboard/forgot-password.html"
+                className="text-sm text-primary-400 hover:text-primary-300 hover:underline transition-colors"
+              >
+                Mot de passe oublié ?
+              </a>
+            </p>
           </form>
         </motion.div>
       </div>
