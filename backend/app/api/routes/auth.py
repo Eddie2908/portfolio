@@ -56,7 +56,7 @@ async def forgot_password(request: Request, data: ForgotPasswordRequest):
     # to avoid leaking which emails are registered.
     if result:
         raw_token, user = result
-        reset_link = f"{settings.ADMIN_URL}/reset-password.html?token={raw_token}"
+        reset_link = f"{settings.FRONTEND_URL}/admin/reset-password?token={raw_token}"
         try:
             await send_password_reset_email(user["email"], user["name"], reset_link)
         except RuntimeError as e:

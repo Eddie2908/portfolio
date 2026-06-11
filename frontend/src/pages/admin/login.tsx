@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Head from 'next/head';
 import { motion } from 'framer-motion';
+import Link from 'next/link';
 import { Lock, Mail, Eye, EyeOff, Code2 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import Button from '@/components/ui/Button';
@@ -79,12 +80,12 @@ export default function AdminLogin() {
             </Button>
 
             <p className="text-center mt-4">
-              <a
-                href="/admin-dashboard/forgot-password.html"
+              <Link
+                href="/admin/forgot-password"
                 className="text-sm text-primary-400 hover:text-primary-300 hover:underline transition-colors"
               >
                 Mot de passe oublié ?
-              </a>
+              </Link>
             </p>
           </form>
         </motion.div>

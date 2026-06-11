@@ -38,8 +38,11 @@ class Settings(BaseSettings):
     SMTP_PASSWORD: str = ""
     CONTACT_EMAIL: str = ""
 
-    # Base URL of the admin dashboard (used for password reset links)
+    # Base URL of the admin dashboard (used for notification links)
     ADMIN_URL: str = "http://localhost:5500/admin-dashboard"
+
+    # Base URL of the Next.js frontend (used for password reset links)
+    FRONTEND_URL: str = "http://localhost:3000"
 
     # Lifetime of a password reset token, in minutes
     RESET_TOKEN_EXPIRE_MINUTES: int = 60
