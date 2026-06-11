@@ -48,29 +48,29 @@
 
     <main class="main-content">
         <header class="top-header">
-            <button class="menu-toggle" onclick="toggleSidebar()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+            <button class="menu-toggle" onclick="toggleSidebar()" aria-label="Menu" title="Menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
             <h1 class="page-title">Portfolio Public</h1>
             <div class="header-actions">
-                <button id="themeToggle" onclick="toggleTheme()" class="theme-toggle" aria-label="Toggle theme"></button>
+                <button id="themeToggle" onclick="toggleTheme()" class="theme-toggle" aria-label="Basculer le thème" title="Basculer le thème"></button>
                 <div class="user-avatar" id="avatarInitials">FK</div>
             </div>
         </header>
 
         <div class="content-area">
-            <div style="max-width:720px;">
+            <div class="form-limit-lg">
 
                 <!-- Avatar upload -->
                 <div class="avatar-upload-area">
                     <div class="avatar-preview" id="avatarPreview"><span id="avatarInitialsBig">FK</span></div>
                     <div class="avatar-upload-info">
-                        <strong style="color:var(--text-primary);font-size:14px;">Photo de profil</strong>
+                        <strong class="label-strong">Photo de profil</strong>
                         <p>JPG, PNG ou WebP &mdash; max 2 MB. Affichée sur la page d&apos;accueil du portfolio.</p>
-                        <div style="display:flex;gap:10px;margin-top:10px;align-items:center;">
-                            <button class="btn-secondary upload-btn">
+                        <div class="flex-gap-10 mt-10">
+                            <label class="btn-secondary upload-btn">
                                 Changer la photo
-                                <input type="file" id="avatarFileInput" accept="image/*" onchange="handleAvatarUpload(this)">
-                            </button>
-                            <button type="button" id="removeAvatarBtn" class="btn-secondary" onclick="removeAvatar()" style="display:none;color:var(--danger);">Supprimer</button>
+                                <input type="file" id="avatarFileInput" accept="image/*" onchange="handleAvatarUpload(this)" title="Changer la photo" aria-label="Changer la photo">
+                            </label>
+                            <button type="button" id="removeAvatarBtn" class="btn-secondary hidden text-danger" onclick="removeAvatar()">Supprimer</button>
                         </div>
                     </div>
                 </div>
@@ -144,7 +144,7 @@
                 <div id="tab-stats" class="tab-pane">
                     <div class="form-card">
                         <h3>Chiffres clés (section À propos + Hero)</h3>
-                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                        <div class="grid-2">
                             <div class="form-group">
                                 <label for="yearsExp">Années d'expérience</label>
                                 <input type="text" id="yearsExp" placeholder="3+">
@@ -253,7 +253,7 @@ async function handleAvatarUpload(input) {
         const url = await apiUpload('/admin/upload?bucket=portfolio', file);
         currentAvatarUrl = url;
         document.getElementById('avatarPreview').innerHTML = `<img src="${url}" alt="Avatar">`;
-        document.getElementById('removeAvatarBtn').style.display = 'inline-flex';
+        document.getElementById('removeAvatarBtn').classList.remove('hidden');
         showNotification('Photo mise à jour — pensez à sauvegarder');
     } catch (e) { showNotification(e.message || 'Erreur upload', 'error'); }
 }
@@ -262,7 +262,7 @@ function removeAvatar() {
     currentAvatarUrl = null;
     const initials = document.getElementById('avatarInitials').textContent;
     document.getElementById('avatarPreview').innerHTML = `<span id="avatarInitialsBig">${initials}</span>`;
-    document.getElementById('removeAvatarBtn').style.display = 'none';
+    document.getElementById('removeAvatarBtn').classList.add('hidden');
 }
 
 async function loadProfile() {
@@ -300,7 +300,7 @@ async function loadProfile() {
         const preview = document.getElementById('avatarPreview');
         if (currentAvatarUrl) {
             preview.innerHTML = `<img src="${currentAvatarUrl}" alt="Avatar">`;
-            document.getElementById('removeAvatarBtn').style.display = 'inline-flex';
+            document.getElementById('removeAvatarBtn').classList.remove('hidden');
         } else {
             preview.innerHTML = `<span id="avatarInitialsBig">${initials}</span>`;
         }

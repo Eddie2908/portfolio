@@ -35,16 +35,16 @@
         </aside>
         <main class="main-content">
             <header class="top-header">
-                <button class="menu-toggle" onclick="toggleSidebar()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+                <button class="menu-toggle" onclick="toggleSidebar()" aria-label="Menu" title="Menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
                 <h1 class="page-title">Témoignages</h1>
-                <div class="header-actions"><button id="themeToggle" onclick="toggleTheme()" class="theme-toggle" aria-label="Toggle theme"></button><button class="btn-primary" onclick="openModal()">+ Nouveau</button><div class="user-avatar" id="avatarInitials">AD</div></div>
+                <div class="header-actions"><button id="themeToggle" onclick="toggleTheme()" class="theme-toggle" aria-label="Basculer le thème" title="Basculer le thème"></button><button class="btn-primary" onclick="openModal()">+ Nouveau</button><div class="user-avatar" id="avatarInitials">AD</div></div>
             </header>
             <div class="content-area">
                 <div class="data-table-wrapper">
                     <table class="data-table">
                         <thead><tr><th>Nom</th><th>Rôle</th><th>Statut</th><th>Actions</th></tr></thead>
                         <tbody id="testimonialsTableBody">
-                            <tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:24px;">Chargement...</td></tr>
+                            <tr><td colspan="4" class="empty-cell">Chargement...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -97,13 +97,13 @@
             const items = data?.items || data || [];
             const tbody = document.getElementById('testimonialsTableBody');
             if (!items.length) {
-                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:24px;">Aucun témoignage</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="4" class="empty-cell">Aucun témoignage</td></tr>';
                 return;
             }
             tbody.innerHTML = items.map(t => `
                 <tr>
-                    <td><strong style="color:var(--text-primary)">${t.name}</strong></td>
-                    <td style="color:var(--text-secondary)">${t.role}</td>
+                    <td><strong class="text-primary">${t.name}</strong></td>
+                    <td class="text-secondary">${t.role}</td>
                     <td><span class="status-badge status-${t.status}">${t.status === 'published' ? 'Publié' : 'Brouillon'}</span></td>
                     <td>
                         <div class="table-actions">

@@ -28,16 +28,16 @@
         </aside>
         <main class="main-content">
             <header class="top-header">
-                <button class="menu-toggle" onclick="toggleSidebar()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+                <button class="menu-toggle" onclick="toggleSidebar()" aria-label="Menu" title="Menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
                 <h1 class="page-title">Messages</h1>
-                <div class="header-actions"><button id="themeToggle" onclick="toggleTheme()" class="theme-toggle" aria-label="Toggle theme"></button><div class="user-avatar">AD</div></div>
+                <div class="header-actions"><button id="themeToggle" onclick="toggleTheme()" class="theme-toggle" aria-label="Basculer le thème" title="Basculer le thème"></button><div class="user-avatar">AD</div></div>
             </header>
             <div class="content-area">
                 <div class="data-table-wrapper">
                     <table class="data-table">
                         <thead><tr><th>Expéditeur</th><th>Sujet</th><th>Statut</th><th>Date</th><th>Actions</th></tr></thead>
                         <tbody id="messagesTableBody">
-                            <tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:24px;">Chargement...</td></tr>
+                            <tr><td colspan="5" class="empty-cell">Chargement...</td></tr>
                         </tbody>
                     </table>
                 </div>

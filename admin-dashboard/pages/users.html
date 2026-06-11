@@ -38,11 +38,11 @@
         </aside>
         <main class="main-content">
             <header class="top-header">
-                <button class="menu-toggle" onclick="toggleSidebar()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+                <button class="menu-toggle" onclick="toggleSidebar()" aria-label="Menu" title="Menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
                 <h1 class="page-title">Utilisateurs</h1>
                 <div class="header-actions">
-                    <button onclick="openModal()" class="btn-primary" style="font-size:13px;padding:8px 16px;">+ Nouvel utilisateur</button>
-                    <button id="themeToggle" onclick="toggleTheme()" class="theme-toggle" aria-label="Toggle theme"></button>
+                    <button onclick="openModal()" class="btn-primary btn-sm">+ Nouvel utilisateur</button>
+                    <button id="themeToggle" onclick="toggleTheme()" class="theme-toggle" aria-label="Basculer le thème" title="Basculer le thème"></button>
                     <div class="user-avatar" id="avatarInitials">AD</div>
                 </div>
             </header>
@@ -51,7 +51,7 @@
                     <table class="data-table">
                         <thead><tr><th>Nom</th><th>Email</th><th>Rôle</th><th>Statut</th><th>Création</th><th>Actions</th></tr></thead>
                         <tbody id="usersTableBody">
-                            <tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:24px;">Chargement...</td></tr>
+                            <tr><td colspan="6" class="empty-cell">Chargement...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -108,20 +108,20 @@
     function renderUsers(users) {
         const tbody = document.getElementById('usersTableBody');
         if (!users || users.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:24px;">Aucun utilisateur</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="6" class="empty-cell">Aucun utilisateur</td></tr>';
             return;
         }
         tbody.innerHTML = users.map(u => `
             <tr>
-                <td><strong style="color:var(--text-primary)">${u.name}</strong></td>
-                <td style="color:var(--text-secondary)">${u.email}</td>
+                <td><strong class="text-primary">${u.name}</strong></td>
+                <td class="text-secondary">${u.email}</td>
                 <td><span class="role-badge role-${u.role}">${u.role}</span></td>
                 <td><span class="status-badge ${u.status === 'active' ? 'status-active' : ''}">${u.status === 'active' ? 'Actif' : u.status}</span></td>
-                <td style="color:var(--text-muted);font-size:12px;">${formatDate(u.created_at)}</td>
+                <td class="text-muted font-small">${formatDate(u.created_at)}</td>
                 <td>
                     <div class="table-actions">
                         <button class="action-btn delete" title="Supprimer" onclick="deleteUser(${u.id}, '${u.name}')"
-                            style="color:var(--danger);">
+                            class="text-danger">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <polyline points="3 6 5 6 21 6"></polyline>
                                 <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
@@ -139,7 +139,7 @@
             renderUsers(users);
         } catch (e) {
             document.getElementById('usersTableBody').innerHTML =
-                '<tr><td colspan="6" style="text-align:center;color:var(--danger);padding:24px;">Erreur de chargement</td></tr>';
+                '<tr><td colspan="6" class="empty-cell text-danger">Erreur de chargement</td></tr>';
         }
     }
 

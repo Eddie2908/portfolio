@@ -28,12 +28,12 @@
         </aside>
         <main class="main-content">
             <header class="top-header">
-                <button class="menu-toggle" onclick="toggleSidebar()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+                <button class="menu-toggle" onclick="toggleSidebar()" aria-label="Menu" title="Menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
                 <h1 class="page-title">Paramètres</h1>
-                <div class="header-actions"><button id="themeToggle" onclick="toggleTheme()" class="theme-toggle" aria-label="Toggle theme"></button><div class="user-avatar">AD</div></div>
+                <div class="header-actions"><button id="themeToggle" onclick="toggleTheme()" class="theme-toggle" aria-label="Basculer le thème" title="Basculer le thème"></button><div class="user-avatar">AD</div></div>
             </header>
             <div class="content-area">
-                <form id="settingsForm" style="max-width:700px;">
+                <form id="settingsForm" class="form-limit">
 
                     <!-- GÉNÉRAL -->
                     <div class="form-card">
@@ -55,7 +55,7 @@
                     <!-- PROFIL PORTFOLIO -->
                     <div class="form-card">
                         <h3>Profil Portfolio</h3>
-                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                        <div class="grid-2">
                             <div class="form-group">
                                 <label for="fullName">Nom complet</label>
                                 <input type="text" id="fullName" placeholder="Franck Eddie KEMTA">
@@ -65,7 +65,7 @@
                                 <input type="text" id="jobTitle" placeholder="Développeur Full-Stack · React · FastAPI">
                             </div>
                         </div>
-                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                        <div class="grid-2">
                             <div class="form-group">
                                 <label for="location">Localisation</label>
                                 <input type="text" id="location" placeholder="Yaoundé, Cameroun">
@@ -101,7 +101,7 @@
                     <!-- STATISTIQUES HERO -->
                     <div class="form-card">
                         <h3>Statistiques &amp; Hero</h3>
-                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                        <div class="grid-2">
                             <div class="form-group">
                                 <label for="yearsExp">Années d'expérience</label>
                                 <input type="text" id="yearsExp" placeholder="3+">
@@ -111,7 +111,7 @@
                                 <input type="text" id="projectsCount" placeholder="20+">
                             </div>
                         </div>
-                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                        <div class="grid-2">
                             <div class="form-group">
                                 <label for="funStat">Stat fun (valeur)</label>
                                 <input type="text" id="funStat" placeholder="∞">
@@ -121,7 +121,7 @@
                                 <input type="text" id="funStatLabel" placeholder="Cafés bus">
                             </div>
                         </div>
-                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                        <div class="grid-2">
                             <div class="form-group">
                                 <label for="heroBadgeExp">Badge Hero — Expérience</label>
                                 <input type="text" id="heroBadgeExp" placeholder="3+ ans d'expérience">
@@ -156,7 +156,7 @@
                         <div class="form-group">
                             <label for="techTags">Tags séparés par des virgules</label>
                             <input type="text" id="techTags" placeholder="React, Next.js, TypeScript, Python, FastAPI">
-                            <small style="color:var(--text-muted);font-size:11px;">Ex : React, Next.js, TypeScript, Python, FastAPI, PostgreSQL</small>
+                            <small class="text-muted font-xs">Ex : React, Next.js, TypeScript, Python, FastAPI, PostgreSQL</small>
                         </div>
                     </div>
 

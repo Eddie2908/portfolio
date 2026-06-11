@@ -37,17 +37,17 @@
         </aside>
         <main class="main-content">
             <header class="top-header">
-                <button class="menu-toggle" onclick="toggleSidebar()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+                <button class="menu-toggle" onclick="toggleSidebar()" aria-label="Menu" title="Menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
                 <h1 class="page-title">Modifier projet</h1>
-                <div class="header-actions"><button id="themeToggle" onclick="toggleTheme()" class="theme-toggle" aria-label="Toggle theme"></button><div class="user-avatar">AD</div></div>
+                <div class="header-actions"><button id="themeToggle" onclick="toggleTheme()" class="theme-toggle" aria-label="Basculer le thème" title="Basculer le thème"></button><div class="user-avatar">AD</div></div>
             </header>
             <div class="content-area">
-                <form id="editProjectForm" style="max-width:640px;">
+                <form id="editProjectForm" class="form-limit-sm">
                     <div class="form-card">
                         <h3>Image de couverture</h3>
                         <img id="imgPreview" class="img-preview" alt="Aperçu">
                         <div class="img-upload-zone">
-                            <input type="file" id="imgFileInput" accept="image/*" onchange="handleImageUpload(this)">
+                            <input type="file" id="imgFileInput" accept="image/*" onchange="handleImageUpload(this)" title="Choisir une image" aria-label="Choisir une image">
                             <div class="img-upload-label">Cliquer pour changer l&apos;image</div>
                             <p>JPG, PNG, WebP &mdash; max 5 MB</p>
                         </div>
@@ -102,7 +102,7 @@
                     <div class="form-actions">
                         <button type="submit" class="btn-primary">Enregistrer</button>
                         <a href="projects.html" class="btn-secondary">Annuler</a>
-                        <button type="button" class="btn-primary btn-danger" onclick="handleDelete()" style="margin-left:auto;">Supprimer</button>
+                        <button type="button" class="btn-primary btn-danger ml-auto" onclick="handleDelete()">Supprimer</button>
                     </div>
                 </form>
             </div>

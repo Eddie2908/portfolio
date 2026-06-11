@@ -315,3 +315,29 @@ body {
 }
 
 .btn-login:hover { background: var(--accent-hover); }
+
+/* Login page extras */
+.login-form a {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+.login-form a:hover {
+  color: var(--accent-hover);
+  text-decoration: underline;
+}
+
+.login-page .theme-toggle {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+}
+
+.forgot-password-link {
+  text-align: center;
+  margin-top: 16px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  display: block;
+}
