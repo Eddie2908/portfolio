@@ -1,3 +1,5 @@
+import asyncio
+
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel
 from typing import Optional
@@ -52,15 +54,21 @@ async def login(request: Request, data: UserLogin):
 @limiter.limit("3/minute")
 async def forgot_password(request: Request, data: ForgotPasswordRequest):
     result = create_password_reset_token(data.email)
-    # If the user exists, send the email. We always return the same response
-    # to avoid leaking which emails are registered.
+    # If the user exists, send the email in the background so the API
+    # responds immediately (critical on free tiers like Railway where
+    # cold-start + SMTP can exceed timeout).
     if result:
         raw_token, user = result
         reset_link = f"{settings.FRONTEND_URL}/admin/reset-password?token={raw_token}"
-        try:
-            await send_password_reset_email(user["email"], user["name"], reset_link)
-        except RuntimeError as e:
-            raise HTTPException(status_code=500, detail=str(e))
+
+        async def _send_email():
+            try:
+                await send_password_reset_email(user["email"], user["name"], reset_link)
+            except Exception as e:
+                logger = logging.getLogger("portfolio_api")
+                logger.error(f"Background password reset email failed: {e}")
+
+        asyncio.create_task(_send_email())
     return {"message": "Si un compte existe pour cet email, un lien de réinitialisation a été envoyé."}
 
 
