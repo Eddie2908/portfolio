@@ -44,7 +44,7 @@ export default function AdminUsers() {
       key: 'actions', label: 'Actions',
       render: (_, row) => (
         <div className="flex gap-2">
-          <button onClick={() => handleDelete(row.id, row.name)} className="p-1.5 rounded-lg hover:bg-red-500/10 text-white/50 hover:text-red-400 transition-colors">
+          <button onClick={() => handleDelete(row.id, row.name)} aria-label="Supprimer" className="p-1.5 rounded-lg hover:bg-red-500/10 text-white/50 hover:text-red-400 transition-colors">
             <Trash2 size={14} />
           </button>
         </div>

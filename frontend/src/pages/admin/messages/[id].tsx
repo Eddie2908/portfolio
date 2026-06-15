@@ -9,28 +9,29 @@ import toast from 'react-hot-toast';
 export default function MessageDetail() {
   const router = useRouter();
   const { id } = router.query;
+  const msgId = Array.isArray(id) ? id[0] : id;
   const [message, setMessage] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!router.isReady || !id) return;
+    if (!router.isReady || !msgId) return;
     setLoading(true);
     setMessage(null);
-    contactService.getMessage(id)
+    contactService.getMessage(msgId)
       .then(async (data) => {
         setMessage(data);
         if (data?.status === 'unread') {
-          contactService.markAsRead(id).catch(() => {});
+          contactService.markAsRead(msgId).catch(() => {});
         }
       })
       .catch((e) => toast.error(e?.response?.data?.detail || e?.message || 'Impossible de charger le message'))
       .finally(() => setLoading(false));
-  }, [router.isReady, id]);
+  }, [router.isReady, msgId]);
 
   async function handleDelete() {
     if (!confirm('Supprimer ce message ?')) return;
     try {
-      await contactService.deleteMessage(id);
+      await contactService.deleteMessage(msgId!);
       toast.success('Message supprimé');
       router.push('/admin/messages');
     } catch {

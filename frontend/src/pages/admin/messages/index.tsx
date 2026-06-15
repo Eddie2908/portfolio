@@ -51,10 +51,10 @@ export default function AdminMessages() {
       key: 'actions', label: 'Actions',
       render: (_, row) => (
         <div className="flex gap-2">
-          <Link href={`/admin/messages/${row.id}`} className="p-1.5 rounded-lg hover:bg-white/10 text-white/50 hover:text-white transition-colors">
+          <Link href={`/admin/messages/${row.id}`} aria-label="Voir" className="p-1.5 rounded-lg hover:bg-white/10 text-white/50 hover:text-white transition-colors">
             <Eye size={14} />
           </Link>
-          <button onClick={() => handleDelete(row.id)} className="p-1.5 rounded-lg hover:bg-red-500/10 text-white/50 hover:text-red-400 transition-colors">
+          <button onClick={() => handleDelete(row.id)} aria-label="Supprimer" className="p-1.5 rounded-lg hover:bg-red-500/10 text-white/50 hover:text-red-400 transition-colors">
             <Trash2 size={14} />
           </button>
         </div>

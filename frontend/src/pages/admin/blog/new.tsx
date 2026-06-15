@@ -42,7 +42,7 @@ export default function NewBlogPost() {
   const onSubmit = async (data) => {
     setSaving(true);
     try {
-      let image_url = null;
+      let image_url: string | null = null;
       if (coverFile) {
         const uploaded = await adminService.uploadFile(coverFile, 'blog');
         image_url = uploaded.url;
@@ -89,7 +89,7 @@ export default function NewBlogPost() {
                 <span className="text-xs text-white/20">JPG, PNG, WebP · max 5 Mo</span>
               </button>
             )}
-            <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleCoverChange} />
+            <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleCoverChange} aria-label="Image de couverture" />
           </div>
 
           <div>

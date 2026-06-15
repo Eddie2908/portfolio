@@ -11,6 +11,7 @@ import { adminService } from '@/services/admin';
 export default function EditProject() {
   const router = useRouter();
   const { id } = router.query;
+  const projectId = Array.isArray(id) ? id[0] : id;
   const { register, handleSubmit, reset, formState: { errors } } = useForm<any>();
   const [imageUrl, setImageUrl] = useState('');
   const [preview, setPreview] = useState('');
@@ -20,8 +21,8 @@ export default function EditProject() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
-    if (!id) return;
-    adminService.getProject(id)
+    if (!projectId) return;
+    adminService.getProject(projectId)
       .then((p) => {
         reset({
           title: p.title || '',
@@ -37,7 +38,7 @@ export default function EditProject() {
       })
       .catch(() => toast.error('Impossible de charger le projet'))
       .finally(() => setLoading(false));
-  }, [id, reset]);
+  }, [projectId, reset]);
 
   const handleImageChange = async (e) => {
     const file = e.target.files?.[0];
@@ -66,7 +67,7 @@ export default function EditProject() {
     setSubmitting(true);
     try {
       const tags = data.tags ? data.tags.split(',').map(t => t.trim()).filter(Boolean) : [];
-      await adminService.updateProject(id, {
+      await adminService.updateProject(projectId!, {
         ...data,
         tags,
         image_url: imageUrl || null,
@@ -102,7 +103,7 @@ export default function EditProject() {
                 </div>
               )}
               {preview && (
-                <button type="button" onClick={clearImage}
+                <button type="button" onClick={clearImage} aria-label="Supprimer l'image"
                   className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center hover:bg-red-600">
                   <X size={10} className="text-white" />
                 </button>
@@ -110,7 +111,7 @@ export default function EditProject() {
             </div>
             <div className="space-y-2">
               <p className="text-white/40 text-xs">JPG, PNG, WebP recommandé — max 5 Mo</p>
-              <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
+              <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleImageChange} aria-label="Image du projet" />
               <button type="button" onClick={() => fileInputRef.current?.click()} disabled={uploading}
                 className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-white/15 text-white/70 hover:text-white hover:border-white/30 text-xs transition-colors disabled:opacity-50">
                 <Upload size={13} />

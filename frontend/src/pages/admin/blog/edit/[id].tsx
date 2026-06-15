@@ -20,9 +20,11 @@ export default function EditBlogPost() {
   const fileRef = useRef<HTMLInputElement | null>(null);
   const { register, handleSubmit, reset } = useForm<any>();
 
+  const postId = Array.isArray(id) ? id[0] : id;
+
   useEffect(() => {
-    if (!router.isReady || !id) return;
-    adminService.getBlogPost(id)
+    if (!router.isReady || !postId) return;
+    adminService.getBlogPost(postId)
       .then((post) => {
         reset({
           ...post,
@@ -32,7 +34,7 @@ export default function EditBlogPost() {
       })
       .catch((e) => toast.error(e?.response?.data?.detail || 'Impossible de charger l\'article'))
       .finally(() => setLoading(false));
-  }, [router.isReady, id, reset]);
+  }, [router.isReady, postId, reset]);
 
   const handleCoverChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -54,7 +56,7 @@ export default function EditBlogPost() {
   const onSubmit = async (data) => {
     setSaving(true);
     try {
-      let image_url = removedCover ? null : undefined;
+      let image_url: string | null | undefined = removedCover ? null : undefined;
       if (coverFile) {
         const uploaded = await adminService.uploadFile(coverFile, 'blog');
         image_url = uploaded.url;
@@ -64,7 +66,7 @@ export default function EditBlogPost() {
         tags: data.tags ? data.tags.split(',').map(t => t.trim()).filter(Boolean) : [],
         ...(image_url !== undefined ? { image_url } : {}),
       };
-      await adminService.updateBlogPost(id, payload);
+      await adminService.updateBlogPost(postId!, payload);
       toast.success('Article mis à jour');
       router.push('/admin/blog');
     } catch (e) {
@@ -112,7 +114,7 @@ export default function EditBlogPost() {
                 <span className="text-xs text-white/20">JPG, PNG, WebP · max 5 Mo</span>
               </button>
             )}
-            <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleCoverChange} />
+            <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleCoverChange} aria-label="Image de couverture" />
           </div>
 
           <div>

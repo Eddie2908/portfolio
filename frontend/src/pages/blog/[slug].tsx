@@ -19,7 +19,7 @@ function LoadingSkeleton() {
       <div className="h-4 w-1/2 rounded-full bg-white/8" />
       <div className="space-y-3 mt-8">
         {[100, 95, 88, 100, 72, 90, 80].map((w, i) => (
-          <div key={i} className="h-3.5 rounded-full bg-white/6" style={{ width: `${w}%` }} />
+          <div key={i} className={`h-3.5 rounded-full bg-white/6 w-[${w}%]`} />
         ))}
       </div>
     </div>
@@ -40,22 +40,23 @@ function NotFound() {
 export default function BlogPost() {
   const router = useRouter();
   const { slug } = router.query;
+  const postSlug = Array.isArray(slug) ? slug[0] : slug;
 
   const [post, setPost]         = useState<any>(null);
   const [loading, setLoading]   = useState(true);
   const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
-    if (!router.isReady || !slug) return;
+    if (!router.isReady || !postSlug) return;
     setLoading(true);
     setNotFound(false);
-    portfolioService.getBlogPost(slug)
+    portfolioService.getBlogPost(postSlug)
       .then(setPost)
       .catch((err) => {
         if (err?.response?.status === 404) setNotFound(true);
       })
       .finally(() => setLoading(false));
-  }, [router.isReady, slug]);
+  }, [router.isReady, postSlug]);
 
   const date = post?.created_at
     ? new Date(post.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })

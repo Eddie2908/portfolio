@@ -68,8 +68,7 @@ export default function AdminTestimonials() {
           >
             <Clock size={14} /> En attente
             {pending.length > 0 && (
-              <span className="min-w-[18px] h-[18px] px-1 rounded-full text-[9px] font-bold flex items-center justify-center text-white"
-                style={{ background: 'linear-gradient(135deg,#5865f5,#c344f0)' }}>
+              <span className="min-w-[18px] h-[18px] px-1 rounded-full text-[9px] font-bold flex items-center justify-center text-white bg-gradient-to-br from-[#5865f5] to-[#c344f0]">
                 {pending.length}
               </span>
             )}
@@ -144,7 +143,7 @@ export default function AdminTestimonials() {
                         <Check size={13} /> Approuver
                       </button>
                     )}
-                    <button onClick={() => handleDelete(t.id)}
+                    <button onClick={() => handleDelete(t.id)} aria-label="Supprimer"
                       className="p-1.5 rounded-lg hover:bg-red-500/10 text-white/30 hover:text-red-400 transition-colors">
                       <Trash2 size={14} />
                     </button>

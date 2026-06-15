@@ -78,7 +78,7 @@ export default function NewProject() {
                 </div>
               )}
               {preview && (
-                <button type="button" onClick={clearImage}
+                <button type="button" onClick={clearImage} aria-label="Supprimer l'image"
                   className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center hover:bg-red-600">
                   <X size={10} className="text-white" />
                 </button>
@@ -86,7 +86,7 @@ export default function NewProject() {
             </div>
             <div className="space-y-2">
               <p className="text-white/40 text-xs">JPG, PNG, WebP recommandé — max 5 Mo</p>
-              <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
+              <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleImageChange} aria-label="Image du projet" />
               <button type="button" onClick={() => fileInputRef.current?.click()} disabled={uploading}
                 className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-white/15 text-white/70 hover:text-white hover:border-white/30 text-xs transition-colors disabled:opacity-50">
                 <Upload size={13} />

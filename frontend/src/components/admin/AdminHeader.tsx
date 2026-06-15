@@ -41,41 +41,23 @@ export default function AdminHeader({ title, onMenuClick }: { title: any; onMenu
         <Link
           href="/admin/messages"
           title={unread > 0 ? `${unread} message(s) non lu(s)` : 'Aucune notification'}
-          className="relative p-2 rounded-xl transition-all duration-200 group"
-          style={unread > 0 ? {
-            background: 'linear-gradient(135deg, rgba(88,101,245,0.15), rgba(195,68,240,0.10))',
-            border: '1px solid rgba(88,101,245,0.25)',
-            boxShadow: '0 0 12px rgba(88,101,245,0.15)',
-          } : {
-            background: 'rgba(255,255,255,0.04)',
-            border: '1px solid rgba(255,255,255,0.06)',
-          }}
+          className={`relative p-2 rounded-xl transition-all duration-200 group border ${unread > 0 ? 'bg-gradient-to-br from-[rgba(88,101,245,0.15)] to-[rgba(195,68,240,0.10)] border-[rgba(88,101,245,0.25)] shadow-[0_0_12px_rgba(88,101,245,0.15)]' : 'bg-white/[0.04] border-white/[0.06]'}`}
         >
           {/* Pulse ring when unread */}
           {unread > 0 && (
-            <span className="absolute inset-0 rounded-xl animate-ping"
-              style={{ background: 'rgba(88,101,245,0.2)', animationDuration: '2s' }}
+            <span className="absolute inset-0 rounded-xl animate-ping bg-[rgba(88,101,245,0.2)] duration-[2s]"
             />
           )}
 
           <Bell
             size={17}
-            className="relative z-10 transition-all duration-200"
-            style={unread > 0
-              ? { color: '#818cf8', filter: 'drop-shadow(0 0 4px rgba(88,101,245,0.7))' }
-              : { color: 'rgba(255,255,255,0.45)' }
-            }
+            className={`relative z-10 transition-all duration-200 ${unread > 0 ? 'text-[#818cf8] drop-shadow-[0_0_4px_rgba(88,101,245,0.7)]' : 'text-white/45'}`}
           />
 
           {/* Badge */}
           {unread > 0 && (
             <span
-              className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center text-white font-bold"
-              style={{
-                fontSize: '9px',
-                background: 'linear-gradient(135deg, #5865f5, #c344f0)',
-                boxShadow: '0 0 8px rgba(88,101,245,0.6)',
-              }}
+              className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center text-white font-bold text-[9px] bg-gradient-to-br from-[#5865f5] to-[#c344f0] shadow-[0_0_8px_rgba(88,101,245,0.6)]"
             >
               {unread > 9 ? '9+' : unread}
             </span>

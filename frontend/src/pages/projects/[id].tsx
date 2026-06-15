@@ -18,7 +18,7 @@ function LoadingSkeleton() {
       <div className="h-4 w-1/3 rounded-full dark:bg-white/6 bg-black/6" />
       <div className="space-y-3 mt-6">
         {[100, 95, 88, 80, 92].map((w, i) => (
-          <div key={i} className="h-3.5 rounded-full dark:bg-white/6 bg-black/6" style={{ width: `${w}%` }} />
+          <div key={i} className={`h-3.5 rounded-full dark:bg-white/6 bg-black/6 w-[${w}%]`} />
         ))}
       </div>
     </div>
@@ -41,6 +41,7 @@ function NotFound() {
 export default function ProjectDetail() {
   const router = useRouter();
   const { id } = router.query;
+  const projectId = Array.isArray(id) ? id[0] : id;
 
   const [project, setProject] = useState<any>(null);
   const [loading, setLoading]   = useState(true);
@@ -48,11 +49,11 @@ export default function ProjectDetail() {
   const [activeImage, setActiveImage] = useState(0);
 
   useEffect(() => {
-    if (!router.isReady || !id) return;
+    if (!router.isReady || !projectId) return;
     setLoading(true);
     setNotFound(false);
     setActiveImage(0);
-    portfolioService.getProject(id)
+    portfolioService.getProject(projectId)
       .then((data) => {
         if (!data) setNotFound(true);
         else setProject(data);
@@ -61,7 +62,7 @@ export default function ProjectDetail() {
         if (err?.response?.status === 404) setNotFound(true);
       })
       .finally(() => setLoading(false));
-  }, [router.isReady, id]);
+  }, [router.isReady, projectId]);
 
   const images = (() => {
     if (!project) return [];
@@ -84,8 +85,7 @@ export default function ProjectDetail() {
 
       <main className="pt-28 pb-24 relative overflow-hidden">
         {/* Decorative glow */}
-        <div className="absolute top-20 left-1/2 -translate-x-1/2 w-[900px] h-[400px] rounded-full opacity-10 blur-3xl pointer-events-none"
-          style={{ background: 'radial-gradient(ellipse, #5865f5, transparent 70%)' }} />
+        <div className="absolute top-20 left-1/2 -translate-x-1/2 w-[900px] h-[400px] rounded-full opacity-10 blur-3xl pointer-events-none bg-[radial-gradient(ellipse,#5865f5,transparent_70%)]" />
 
         <div className="section-container relative max-w-5xl">
           <Link
@@ -108,12 +108,11 @@ export default function ProjectDetail() {
               {/* Hero image / gallery */}
               <div className="mb-10">
                 <div
-                  className="relative h-72 sm:h-96 lg:h-[460px] rounded-2xl overflow-hidden border dark:border-white/8 border-gray-200 shadow-xl"
-                  style={{
-                    background: `linear-gradient(135deg, ${
-                      project.category === 'backend' ? '#1e1540' : '#1a1f2e'
-                    }, #0d0f18)`,
-                  }}
+                  className={`relative h-72 sm:h-96 lg:h-[460px] rounded-2xl overflow-hidden border dark:border-white/8 border-gray-200 shadow-xl ${
+                    project.category === 'backend'
+                      ? 'bg-gradient-to-br from-[#1e1540] to-[#0d0f18]'
+                      : 'bg-gradient-to-br from-[#1a1f2e] to-[#0d0f18]'
+                  }`}
                 >
                   {images[activeImage] ? (
                     <motion.img
@@ -127,8 +126,7 @@ export default function ProjectDetail() {
                     />
                   ) : (
                     <div className="absolute inset-0 flex items-center justify-center opacity-40">
-                      <div className="w-48 h-48 rounded-full animate-pulse-slow"
-                        style={{ background: 'linear-gradient(135deg, #5865f5, #c344f0)', filter: 'blur(60px)' }} />
+                      <div className="w-48 h-48 rounded-full animate-pulse-slow bg-gradient-to-br from-[#5865f5] to-[#c344f0] blur-[60px]" />
                     </div>
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
@@ -147,6 +145,7 @@ export default function ProjectDetail() {
                       <button
                         key={i}
                         onClick={() => setActiveImage(i)}
+                        aria-label={`Voir image ${i + 1}`}
                         data-cursor="link"
                         className={`relative flex-shrink-0 w-24 h-16 rounded-lg overflow-hidden border-2 transition-all duration-300 ${
                           activeImage === i

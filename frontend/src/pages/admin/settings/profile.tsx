@@ -125,6 +125,8 @@ export default function AdminProfile() {
                 <button
                   type="button"
                   onClick={clearAvatar}
+                  aria-label="Supprimer l'avatar"
+                  title="Supprimer l'avatar"
                   className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center hover:bg-red-600 transition-colors"
                 >
                   <X size={10} className="text-white" />
@@ -140,6 +142,7 @@ export default function AdminProfile() {
                 accept="image/*"
                 className="hidden"
                 onChange={handleFileChange}
+                aria-label="Avatar"
               />
               <button
                 type="button"
