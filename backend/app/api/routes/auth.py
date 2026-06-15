@@ -22,7 +22,7 @@ from app.services.auth_service import (
     create_password_reset_token,
     reset_password_with_token,
 )
-from app.services.email_service import send_password_reset_email
+from app.services.email_service import send_password_reset_email, diagnose_smtp
 from app.utils.security import hash_password, verify_password, validate_password_strength
 
 router = APIRouter()
@@ -71,6 +71,14 @@ async def forgot_password(request: Request, data: ForgotPasswordRequest):
 
         asyncio.create_task(_send_email())
     return {"message": "Si un compte existe pour cet email, un lien de réinitialisation a été envoyé."}
+
+
+@router.get("/smtp-diagnostic")
+async def smtp_diagnostic(current_user: dict = Depends(get_current_user)):
+    """Admin-only endpoint to test the SMTP/email configuration in production."""
+    if current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Réservé aux administrateurs")
+    return await diagnose_smtp()
 
 
 @router.post("/reset-password")

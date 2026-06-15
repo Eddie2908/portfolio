@@ -8,6 +8,44 @@ from app.core.config import settings
 logger = logging.getLogger("portfolio_api")
 
 
+async def diagnose_smtp() -> dict:
+    """Test the SMTP connection and return a detailed status report.
+
+    Used to debug email delivery issues in production (e.g. Railway blocking
+    SMTP ports, revoked Gmail App Password, missing env vars).
+    """
+    report = {
+        "smtp_host": settings.SMTP_HOST,
+        "smtp_port": settings.SMTP_PORT,
+        "smtp_user_set": bool(settings.SMTP_USER),
+        "smtp_password_set": bool(settings.SMTP_PASSWORD),
+        "contact_email_set": bool(settings.CONTACT_EMAIL),
+        "connection": "not_tested",
+        "error": None,
+    }
+
+    if not settings.SMTP_USER or not settings.SMTP_PASSWORD:
+        report["connection"] = "skipped"
+        report["error"] = "SMTP_USER ou SMTP_PASSWORD manquant"
+        return report
+
+    try:
+        client = aiosmtplib.SMTP(
+            hostname=settings.SMTP_HOST,
+            port=settings.SMTP_PORT,
+            timeout=15,
+        )
+        await client.connect(start_tls=True)
+        await client.login(settings.SMTP_USER, settings.SMTP_PASSWORD)
+        await client.quit()
+        report["connection"] = "success"
+    except Exception as e:
+        report["connection"] = "failed"
+        report["error"] = f"{type(e).__name__}: {e}"
+
+    return report
+
+
 def _email_wrapper(title: str, body_html: str, button_label: str = "", button_url: str = "") -> str:
     """Wrap email content in a consistent, responsive HTML template."""
     button = ""
