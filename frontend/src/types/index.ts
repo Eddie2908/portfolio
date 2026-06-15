@@ -72,6 +72,51 @@ export interface PaginatedResponse<T> {
   total: number;
 }
 
+export interface AuthResponse {
+  token: string;
+  user: User;
+}
+
+export interface LoginPayload {
+  email: string;
+  password: string;
+}
+
+export interface RegisterPayload {
+  name: string;
+  email: string;
+  password: string;
+  role?: 'admin' | 'editor';
+}
+
+export interface ProfileUpdatePayload {
+  name?: string;
+  bio?: string;
+  avatar_url?: string;
+}
+
+export interface ChangePasswordPayload {
+  current_password: string;
+  new_password: string;
+}
+
+export interface ContactPayload {
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+}
+
+export interface UploadResponse {
+  url: string;
+  filename?: string;
+}
+
+export interface MessageResponse {
+  message: string;
+  id?: number | string;
+}
+
 export interface ApiError {
   detail: string;
 }

@@ -1,3 +1,4 @@
+import secrets
 from datetime import datetime, timedelta, timezone
 
 from app.core.config import settings
@@ -11,15 +12,31 @@ from app.utils.security import (
 )
 
 
+# Bcrypt hash of a random string, computed once at import. Used to keep login
+# timing constant whether or not the email exists (mitigates user enumeration).
+_DUMMY_HASH = hash_password(secrets.token_urlsafe(16))
+
+
 def authenticate_user(email: str, password: str):
     supabase = get_supabase()
-    response = supabase.table("users").select("*").eq("email", email).single().execute()
-    user = response.data
+    response = supabase.table("users").select("*").eq("email", email).limit(1).execute()
+    user = response.data[0] if response.data else None
 
-    if not user or not verify_password(password, user["password_hash"]):
+    if not user:
+        # Run a dummy verify to keep response time constant and avoid
+        # leaking which emails are registered via timing differences.
+        verify_password(password, _DUMMY_HASH)
         return None
 
-    token = create_token({"sub": str(user["id"]), "email": user["email"], "role": user["role"]})
+    if not verify_password(password, user["password_hash"]):
+        return None
+
+    token = create_token({
+        "sub": str(user["id"]),
+        "email": user["email"],
+        "role": user["role"],
+        "pwd_at": user.get("password_changed_at"),
+    })
     return {"token": token, "user": {"id": user["id"], "name": user["name"], "email": user["email"], "role": user["role"]}}
 
 
@@ -49,6 +66,12 @@ def create_password_reset_token(email: str):
     if not response.data:
         return None
     user = response.data[0]
+
+    # Invalidate any previous unused tokens for this user so only the latest
+    # link works (prevents accumulation and reuse of stale tokens).
+    supabase.table("password_reset_tokens").update({"used": True}).eq(
+        "user_id", user["id"]
+    ).eq("used", False).execute()
 
     raw_token = generate_reset_token()
     expires_at = datetime.now(timezone.utc) + timedelta(minutes=settings.RESET_TOKEN_EXPIRE_MINUTES)
@@ -84,7 +107,10 @@ def reset_password_with_token(token: str, new_password: str) -> bool:
         return False
 
     supabase.table("users").update(
-        {"password_hash": hash_password(new_password)}
+        {
+            "password_hash": hash_password(new_password),
+            "password_changed_at": datetime.now(timezone.utc).isoformat(),
+        }
     ).eq("id", record["user_id"]).execute()
 
     supabase.table("password_reset_tokens").update({"used": True}).eq("id", record["id"]).execute()

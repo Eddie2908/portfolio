@@ -1,6 +1,6 @@
 from fastapi import APIRouter, BackgroundTasks, Depends, File, HTTPException, Request, UploadFile
 from app.api.dependencies import get_admin_user
-from app.database.connection import get_supabase
+from app.database.connection import get_supabase, run_db
 from app.schemas.testimonial_schema import TestimonialSubmit
 from app.services.email_service import send_testimonial_notification_email
 from app.services.resend_email import send_testimonial_notification_email_resend
@@ -14,7 +14,7 @@ router = APIRouter()
 
 
 @router.get("")
-async def get_testimonials():
+def get_testimonials():
     supabase = get_supabase()
     response = (
         supabase.table("testimonials")
@@ -39,11 +39,11 @@ async def upload_testimonial_avatar(request: Request, file: UploadFile = File(..
     filename = f"avatars/{uuid.uuid4()}.{ext}"
     supabase = get_supabase()
     try:
-        supabase.storage.from_("testimonials").upload(
+        await run_db(lambda: supabase.storage.from_("testimonials").upload(
             filename,
             content,
             {"content-type": file.content_type},
-        )
+        ))
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erreur upload : {str(e)}")
     url = supabase.storage.from_("testimonials").get_public_url(filename)
@@ -62,7 +62,7 @@ async def submit_testimonial(request: Request, data: TestimonialSubmit, backgrou
         "status": "pending",
     }
     try:
-        response = supabase.table("testimonials").insert(payload).execute()
+        response = await run_db(lambda: supabase.table("testimonials").insert(payload).execute())
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erreur lors de l'envoi: {str(e)}")
     if not response.data:
@@ -77,7 +77,7 @@ async def submit_testimonial(request: Request, data: TestimonialSubmit, backgrou
 
 
 @router.patch("/{tid}/approve")
-async def approve_testimonial(tid: str, admin: dict = Depends(get_admin_user)):
+def approve_testimonial(tid: str, admin: dict = Depends(get_admin_user)):
     supabase = get_supabase()
     try:
         response = supabase.table("testimonials").update({"status": "published"}).eq("id", tid).execute()
@@ -89,7 +89,7 @@ async def approve_testimonial(tid: str, admin: dict = Depends(get_admin_user)):
 
 
 @router.patch("/{tid}/reject")
-async def reject_testimonial(tid: str, admin: dict = Depends(get_admin_user)):
+def reject_testimonial(tid: str, admin: dict = Depends(get_admin_user)):
     supabase = get_supabase()
     try:
         response = supabase.table("testimonials").update({"status": "rejected"}).eq("id", tid).execute()
@@ -101,7 +101,7 @@ async def reject_testimonial(tid: str, admin: dict = Depends(get_admin_user)):
 
 
 @router.get("/{testimonial_id}")
-async def get_testimonial(testimonial_id: str):
+def get_testimonial(testimonial_id: str):
     supabase = get_supabase()
     try:
         response = supabase.table("testimonials").select("*").eq("id", testimonial_id).limit(1).execute()

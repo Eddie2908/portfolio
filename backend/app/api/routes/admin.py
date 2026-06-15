@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, UploadFile, File
 import uuid
 from app.api.dependencies import get_admin_user, get_super_admin
-from app.database.connection import get_supabase
+from app.database.connection import get_supabase, run_db
 from app.schemas.project_schema import ProjectCreate, ProjectUpdate
 from app.schemas.testimonial_schema import TestimonialCreate, TestimonialUpdate
 from app.schemas.blog_schema import BlogPostCreate, BlogPostUpdate
@@ -41,11 +41,11 @@ async def upload_file(
 
     supabase = get_supabase()
     try:
-        supabase.storage.from_(bucket).upload(
+        await run_db(lambda: supabase.storage.from_(bucket).upload(
             filename,
             content,
             {"content-type": file.content_type},
-        )
+        ))
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erreur upload : {str(e)}")
 
@@ -54,12 +54,12 @@ async def upload_file(
 
 
 @router.get("/stats")
-async def stats(admin: dict = Depends(get_admin_user)):
+def stats(admin: dict = Depends(get_admin_user)):
     return get_dashboard_stats()
 
 
 @router.get("/projects")
-async def admin_get_projects(
+def admin_get_projects(
     page: int = Query(1, ge=1),
     limit: int = Query(20, ge=1, le=100),
     admin: dict = Depends(get_admin_user),
@@ -77,7 +77,7 @@ async def admin_get_projects(
 
 
 @router.get("/projects/{project_id}")
-async def admin_get_project(project_id: int, admin: dict = Depends(get_admin_user)):
+def admin_get_project(project_id: int, admin: dict = Depends(get_admin_user)):
     supabase = get_supabase()
     response = supabase.table("projects").select("*").eq("id", project_id).single().execute()
     if not response.data:
@@ -86,12 +86,12 @@ async def admin_get_project(project_id: int, admin: dict = Depends(get_admin_use
 
 
 @router.post("/projects", status_code=201)
-async def admin_create_project(data: ProjectCreate, admin: dict = Depends(get_admin_user)):
+def admin_create_project(data: ProjectCreate, admin: dict = Depends(get_admin_user)):
     return create_project(data.model_dump())
 
 
 @router.put("/projects/{project_id}")
-async def admin_update_project(project_id: int, data: ProjectUpdate, admin: dict = Depends(get_admin_user)):
+def admin_update_project(project_id: int, data: ProjectUpdate, admin: dict = Depends(get_admin_user)):
     update_data = data.model_dump(exclude_none=True)
     result = update_project(project_id, update_data)
     if not result:
@@ -100,13 +100,13 @@ async def admin_update_project(project_id: int, data: ProjectUpdate, admin: dict
 
 
 @router.delete("/projects/{project_id}")
-async def admin_delete_project(project_id: int, admin: dict = Depends(get_admin_user)):
+def admin_delete_project(project_id: int, admin: dict = Depends(get_admin_user)):
     delete_project(project_id)
     return {"message": "Projet supprimé"}
 
 
 @router.get("/testimonials")
-async def admin_get_testimonials(
+def admin_get_testimonials(
     page: int = Query(1, ge=1),
     limit: int = Query(20, ge=1, le=100),
     admin: dict = Depends(get_admin_user),
@@ -124,14 +124,14 @@ async def admin_get_testimonials(
 
 
 @router.post("/testimonials", status_code=201)
-async def admin_create_testimonial(data: TestimonialCreate, admin: dict = Depends(get_admin_user)):
+def admin_create_testimonial(data: TestimonialCreate, admin: dict = Depends(get_admin_user)):
     supabase = get_supabase()
     response = supabase.table("testimonials").insert(data.model_dump()).execute()
     return response.data[0]
 
 
 @router.put("/testimonials/{tid}")
-async def admin_update_testimonial(tid: str, data: TestimonialUpdate, admin: dict = Depends(get_admin_user)):
+def admin_update_testimonial(tid: str, data: TestimonialUpdate, admin: dict = Depends(get_admin_user)):
     supabase = get_supabase()
     update_data = data.model_dump(exclude_none=True)
     try:
@@ -144,7 +144,7 @@ async def admin_update_testimonial(tid: str, data: TestimonialUpdate, admin: dic
 
 
 @router.delete("/testimonials/{tid}")
-async def admin_delete_testimonial(tid: str, admin: dict = Depends(get_admin_user)):
+def admin_delete_testimonial(tid: str, admin: dict = Depends(get_admin_user)):
     supabase = get_supabase()
     try:
         supabase.table("testimonials").delete().eq("id", tid).execute()
@@ -154,7 +154,7 @@ async def admin_delete_testimonial(tid: str, admin: dict = Depends(get_admin_use
 
 
 @router.get("/blog")
-async def admin_get_posts(
+def admin_get_posts(
     page: int = Query(1, ge=1),
     limit: int = Query(20, ge=1, le=100),
     admin: dict = Depends(get_admin_user),
@@ -172,7 +172,7 @@ async def admin_get_posts(
 
 
 @router.get("/blog/{post_id}")
-async def admin_get_post(post_id: str, admin: dict = Depends(get_admin_user)):
+def admin_get_post(post_id: str, admin: dict = Depends(get_admin_user)):
     supabase = get_supabase()
     try:
         response = supabase.table("blog_posts").select("*").eq("id", post_id).limit(1).execute()
@@ -184,7 +184,7 @@ async def admin_get_post(post_id: str, admin: dict = Depends(get_admin_user)):
 
 
 @router.post("/blog", status_code=201)
-async def admin_create_post(data: BlogPostCreate, admin: dict = Depends(get_admin_user)):
+def admin_create_post(data: BlogPostCreate, admin: dict = Depends(get_admin_user)):
     supabase = get_supabase()
     post_data = data.model_dump()
     try:
@@ -201,7 +201,7 @@ async def admin_create_post(data: BlogPostCreate, admin: dict = Depends(get_admi
 
 
 @router.put("/blog/{post_id}")
-async def admin_update_post(post_id: str, data: BlogPostUpdate, admin: dict = Depends(get_admin_user)):
+def admin_update_post(post_id: str, data: BlogPostUpdate, admin: dict = Depends(get_admin_user)):
     supabase = get_supabase()
     update_data = data.model_dump(exclude_none=True)
     try:
@@ -214,7 +214,7 @@ async def admin_update_post(post_id: str, data: BlogPostUpdate, admin: dict = De
 
 
 @router.delete("/blog/{post_id}")
-async def admin_delete_post(post_id: str, admin: dict = Depends(get_admin_user)):
+def admin_delete_post(post_id: str, admin: dict = Depends(get_admin_user)):
     supabase = get_supabase()
     try:
         supabase.table("blog_posts").delete().eq("id", post_id).execute()
@@ -224,14 +224,14 @@ async def admin_delete_post(post_id: str, admin: dict = Depends(get_admin_user))
 
 
 @router.get("/users")
-async def admin_get_users(admin: dict = Depends(get_super_admin)):
+def admin_get_users(admin: dict = Depends(get_super_admin)):
     supabase = get_supabase()
     response = supabase.table("users").select("id, name, email, role, status, created_at").execute()
     return response.data
 
 
 @router.post("/users", status_code=201)
-async def admin_create_user(data: UserCreate, admin: dict = Depends(get_super_admin)):
+def admin_create_user(data: UserCreate, admin: dict = Depends(get_super_admin)):
     supabase = get_supabase()
     existing = supabase.table("users").select("id").eq("email", data.email).execute()
     if existing.data:
@@ -244,7 +244,7 @@ async def admin_create_user(data: UserCreate, admin: dict = Depends(get_super_ad
 
 
 @router.delete("/users/{user_id}")
-async def admin_delete_user(user_id: int, admin: dict = Depends(get_super_admin)):
+def admin_delete_user(user_id: int, admin: dict = Depends(get_super_admin)):
     if str(admin.get("sub")) == str(user_id):
         raise HTTPException(status_code=400, detail="Impossible de supprimer votre propre compte")
     supabase = get_supabase()
@@ -253,14 +253,14 @@ async def admin_delete_user(user_id: int, admin: dict = Depends(get_super_admin)
 
 
 @router.get("/settings")
-async def admin_get_settings(admin: dict = Depends(get_admin_user)):
+def admin_get_settings(admin: dict = Depends(get_admin_user)):
     supabase = get_supabase()
     response = supabase.table("settings").select("*").eq("id", 1).single().execute()
     return response.data or {}
 
 
 @router.put("/settings")
-async def admin_update_settings(data: SettingsUpdate, admin: dict = Depends(get_admin_user)):
+def admin_update_settings(data: SettingsUpdate, admin: dict = Depends(get_admin_user)):
     supabase = get_supabase()
     update_data = data.model_dump(exclude_none=True)
     supabase.table("settings").upsert({"id": 1, **update_data}).execute()
@@ -268,7 +268,7 @@ async def admin_update_settings(data: SettingsUpdate, admin: dict = Depends(get_
 
 
 @router.get("/skills")
-async def admin_get_skills(
+def admin_get_skills(
     page: int = Query(1, ge=1),
     limit: int = Query(100, ge=1, le=200),
     admin: dict = Depends(get_admin_user),
@@ -287,14 +287,14 @@ async def admin_get_skills(
 
 
 @router.post("/skills", status_code=201)
-async def admin_create_skill(data: SkillCreate, admin: dict = Depends(get_admin_user)):
+def admin_create_skill(data: SkillCreate, admin: dict = Depends(get_admin_user)):
     supabase = get_supabase()
     response = supabase.table("skills").insert(data.model_dump()).execute()
     return response.data[0]
 
 
 @router.put("/skills/{skill_id}")
-async def admin_update_skill(skill_id: int, data: SkillUpdate, admin: dict = Depends(get_admin_user)):
+def admin_update_skill(skill_id: int, data: SkillUpdate, admin: dict = Depends(get_admin_user)):
     supabase = get_supabase()
     update_data = data.model_dump(exclude_none=True)
     response = supabase.table("skills").update(update_data).eq("id", skill_id).execute()
@@ -304,7 +304,7 @@ async def admin_update_skill(skill_id: int, data: SkillUpdate, admin: dict = Dep
 
 
 @router.delete("/skills/{skill_id}")
-async def admin_delete_skill(skill_id: int, admin: dict = Depends(get_admin_user)):
+def admin_delete_skill(skill_id: int, admin: dict = Depends(get_admin_user)):
     supabase = get_supabase()
     supabase.table("skills").delete().eq("id", skill_id).execute()
     return {"message": "Compétence supprimée"}

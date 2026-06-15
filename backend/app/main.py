@@ -13,6 +13,17 @@ from app.middleware.rate_limit import limiter
 from app.middleware.logger import log_middleware
 from app.middleware.security_headers import security_headers_middleware
 
+# Optional error monitoring: only enabled when SENTRY_DSN is configured.
+if settings.SENTRY_DSN:
+    import sentry_sdk
+
+    sentry_sdk.init(
+        dsn=settings.SENTRY_DSN,
+        environment=settings.SENTRY_ENVIRONMENT,
+        traces_sample_rate=settings.SENTRY_TRACES_SAMPLE_RATE,
+        send_default_pii=False,
+    )
+
 app = FastAPI(
     title=settings.APP_TITLE,
     description="API REST pour le portfolio développeur",
@@ -66,7 +77,7 @@ async def health():
 
 
 @app.get("/api/profile", tags=["Profile"])
-async def get_profile():
+def get_profile():
     from app.database.connection import get_supabase
     supabase = get_supabase()
     response = supabase.table("settings").select("*").eq("id", 1).single().execute()

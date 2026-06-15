@@ -5,7 +5,7 @@ router = APIRouter()
 
 
 @router.get("")
-async def get_skills():
+def get_skills():
     supabase = get_supabase()
     response = (
         supabase.table("skills")

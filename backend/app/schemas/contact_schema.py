@@ -1,8 +1,8 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 
 
 class ContactCreate(BaseModel):
-    name: str
+    name: str = Field(min_length=2, max_length=100)
     email: EmailStr
-    subject: str
-    message: str
+    subject: str = Field(min_length=2, max_length=200)
+    message: str = Field(min_length=10, max_length=5000)

@@ -8,6 +8,7 @@ import Head from 'next/head';
 import { useTheme } from '@/context/ThemeContext';
 import Cursor from '@/components/ui/Cursor';
 import PageTransition from '@/components/ui/PageTransition';
+import ErrorBoundary from '@/components/ui/ErrorBoundary';
 import { Analytics } from '@vercel/analytics/react';
 import type { AppProps } from 'next/app';
 import type { NextPage } from 'next';
@@ -47,18 +48,20 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <ThemeProvider>
-        <AdminProvider>
-          <PortfolioDataProvider>
-            <Cursor />
-            <PageTransition>
-              {getLayout(<Component {...pageProps} />)}
-            </PageTransition>
-            <AppToaster />
-            <Analytics />
-          </PortfolioDataProvider>
-        </AdminProvider>
-      </ThemeProvider>
+      <ErrorBoundary>
+        <ThemeProvider>
+          <AdminProvider>
+            <PortfolioDataProvider>
+              <Cursor />
+              <PageTransition>
+                {getLayout(<Component {...pageProps} />)}
+              </PageTransition>
+              <AppToaster />
+              <Analytics />
+            </PortfolioDataProvider>
+          </AdminProvider>
+        </ThemeProvider>
+      </ErrorBoundary>
     </>
   );
 }

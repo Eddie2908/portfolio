@@ -5,7 +5,7 @@ router = APIRouter()
 
 
 @router.get("")
-async def get_projects(
+def get_projects(
     category: str = Query(None),
     page: int = Query(1, ge=1),
     limit: int = Query(20, ge=1, le=100),
@@ -14,7 +14,7 @@ async def get_projects(
 
 
 @router.get("/{project_id}")
-async def get_project(project_id: int):
+def get_project(project_id: int):
     project = get_project_by_id(project_id)
     if not project:
         raise HTTPException(status_code=404, detail="Projet non trouvé")

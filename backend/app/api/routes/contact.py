@@ -1,6 +1,6 @@
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, Request
 from app.api.dependencies import get_admin_user
-from app.database.connection import get_supabase
+from app.database.connection import get_supabase, run_db
 from app.schemas.contact_schema import ContactCreate
 from app.services.email_service import send_notification_email
 from app.services.resend_email import send_notification_email_resend
@@ -22,7 +22,7 @@ async def send_message(request: Request, data: ContactCreate, background_tasks: 
         "status": "unread",
     }
     try:
-        response = supabase.table("messages").insert(message).execute()
+        response = await run_db(lambda: supabase.table("messages").insert(message).execute())
     except Exception:
         raise HTTPException(status_code=500, detail="Impossible d'enregistrer le message")
 
@@ -36,9 +36,9 @@ async def send_message(request: Request, data: ContactCreate, background_tasks: 
 
 
 @router.get("")
-async def get_messages(
-    page: int = 1,
-    limit: int = 20,
+def get_messages(
+    page: int = Query(1, ge=1),
+    limit: int = Query(20, ge=1, le=100),
     admin: dict = Depends(get_admin_user),
 ):
     supabase = get_supabase()
@@ -54,7 +54,7 @@ async def get_messages(
 
 
 @router.get("/{message_id}")
-async def get_message(message_id: str, admin: dict = Depends(get_admin_user)):
+def get_message(message_id: str, admin: dict = Depends(get_admin_user)):
     supabase = get_supabase()
     try:
         response = supabase.table("messages").select("*").eq("id", message_id).limit(1).execute()
@@ -66,7 +66,7 @@ async def get_message(message_id: str, admin: dict = Depends(get_admin_user)):
 
 
 @router.patch("/{message_id}/read")
-async def mark_as_read(message_id: str, admin: dict = Depends(get_admin_user)):
+def mark_as_read(message_id: str, admin: dict = Depends(get_admin_user)):
     supabase = get_supabase()
     try:
         supabase.table("messages").update({"status": "read"}).eq("id", message_id).execute()
@@ -76,7 +76,7 @@ async def mark_as_read(message_id: str, admin: dict = Depends(get_admin_user)):
 
 
 @router.delete("/{message_id}")
-async def delete_message(message_id: str, admin: dict = Depends(get_admin_user)):
+def delete_message(message_id: str, admin: dict = Depends(get_admin_user)):
     supabase = get_supabase()
     try:
         supabase.table("messages").delete().eq("id", message_id).execute()

@@ -54,6 +54,11 @@ class Settings(BaseSettings):
     # Upload
     MAX_UPLOAD_SIZE_MB: int = 5
 
+    # Error monitoring (optional). Leave SENTRY_DSN empty to disable.
+    SENTRY_DSN: str = ""
+    SENTRY_ENVIRONMENT: str = "production"
+    SENTRY_TRACES_SAMPLE_RATE: float = 0.1
+
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"

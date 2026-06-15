@@ -6,7 +6,7 @@ router = APIRouter()
 
 
 @router.get("")
-async def get_posts(
+def get_posts(
     category: str = Query(None),
     page: int = Query(1, ge=1),
     limit: int = Query(20, ge=1, le=50),
@@ -25,7 +25,7 @@ async def get_posts(
 
 
 @router.get("/{slug}")
-async def get_post(slug: str):
+def get_post(slug: str):
     supabase = get_supabase()
     try:
         response = supabase.table("blog_posts").select("*").eq("slug", slug).limit(1).execute()
