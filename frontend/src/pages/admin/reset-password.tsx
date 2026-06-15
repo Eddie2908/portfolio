@@ -19,7 +19,7 @@ export default function ResetPassword() {
   const [success, setSuccess] = useState(false);
 
   useEffect(() => {
-    if (router.isReady && !token) {
+    if (typeof window !== 'undefined' && router.isReady && !token) {
       toast.error('Token manquant');
     }
   }, [router.isReady, token]);
