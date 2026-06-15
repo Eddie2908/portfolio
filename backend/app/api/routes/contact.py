@@ -3,6 +3,8 @@ from app.api.dependencies import get_admin_user
 from app.database.connection import get_supabase
 from app.schemas.contact_schema import ContactCreate
 from app.services.email_service import send_notification_email
+from app.services.resend_email import send_notification_email_resend
+from app.core.config import settings
 from app.middleware.rate_limit import limiter
 
 router = APIRouter()
@@ -24,7 +26,11 @@ async def send_message(request: Request, data: ContactCreate, background_tasks: 
     except Exception:
         raise HTTPException(status_code=500, detail="Impossible d'enregistrer le message")
 
-    background_tasks.add_task(send_notification_email, data)
+    # Try Resend first (works on Railway), fallback to SMTP for local dev
+    if settings.RESEND_API_KEY:
+        background_tasks.add_task(send_notification_email_resend, data)
+    else:
+        background_tasks.add_task(send_notification_email, data)
 
     return {"message": "Message envoyé avec succès", "id": response.data[0]["id"] if response.data else None}
 

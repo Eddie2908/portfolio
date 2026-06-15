@@ -23,6 +23,7 @@ from app.services.auth_service import (
     reset_password_with_token,
 )
 from app.services.email_service import send_password_reset_email, diagnose_smtp
+from app.services.resend_email import send_password_reset_email_resend, diagnose_resend
 from app.utils.security import hash_password, verify_password, validate_password_strength
 
 router = APIRouter()
@@ -64,7 +65,11 @@ async def forgot_password(request: Request, data: ForgotPasswordRequest):
 
         async def _send_email():
             try:
-                await send_password_reset_email(user["email"], user["name"], reset_link)
+                # Try Resend first (works on Railway), fallback to SMTP for local dev
+                if settings.RESEND_API_KEY:
+                    await send_password_reset_email_resend(user["email"], user["name"], reset_link)
+                else:
+                    await send_password_reset_email(user["email"], user["name"], reset_link)
             except Exception as e:
                 logger = logging.getLogger("portfolio_api")
                 logger.error(f"Background password reset email failed: {e}")
@@ -78,7 +83,13 @@ async def smtp_diagnostic(current_user: dict = Depends(get_current_user)):
     """Admin-only endpoint to test the SMTP/email configuration in production."""
     if current_user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Réservé aux administrateurs")
-    return await diagnose_smtp()
+    smtp_status = await diagnose_smtp()
+    resend_status = await diagnose_resend()
+    return {
+        "smtp": smtp_status,
+        "resend": resend_status,
+        "recommendation": "Utilisez Resend (resend.com) sur Railway car SMTP est bloqué"
+    }
 
 
 @router.post("/reset-password")

@@ -3,6 +3,8 @@ from app.api.dependencies import get_admin_user
 from app.database.connection import get_supabase
 from app.schemas.testimonial_schema import TestimonialSubmit
 from app.services.email_service import send_testimonial_notification_email
+from app.services.resend_email import send_testimonial_notification_email_resend
+from app.core.config import settings
 from app.middleware.rate_limit import limiter
 import logging
 import uuid
@@ -66,7 +68,11 @@ async def submit_testimonial(request: Request, data: TestimonialSubmit, backgrou
     if not response.data:
         raise HTTPException(status_code=500, detail="Erreur lors de l'enregistrement")
     logger.info(f"New testimonial submitted by {data.name}")
-    background_tasks.add_task(send_testimonial_notification_email, data)
+    # Try Resend first (works on Railway), fallback to SMTP for local dev
+    if settings.RESEND_API_KEY:
+        background_tasks.add_task(send_testimonial_notification_email_resend, data)
+    else:
+        background_tasks.add_task(send_testimonial_notification_email, data)
     return {"message": "Témoignage soumis. Il sera publié après validation par l'administrateur."}
 
 

@@ -31,12 +31,16 @@ class Settings(BaseSettings):
     def ALLOWED_ORIGINS(self) -> list[str]:
         return [x.strip() for x in self.ALLOWED_ORIGINS_STR.split(",") if x.strip()]
 
-    # SMTP
+    # SMTP (fallback if Resend not configured)
     SMTP_HOST: str = "smtp.gmail.com"
     SMTP_PORT: int = 587
     SMTP_USER: str = ""
     SMTP_PASSWORD: str = ""
     CONTACT_EMAIL: str = ""
+
+    # Resend (preferred - works on Railway where SMTP is blocked)
+    RESEND_API_KEY: str = ""
+    RESEND_FROM_EMAIL: str = ""
 
     # Base URL of the admin dashboard (used for notification links)
     ADMIN_URL: str = "http://localhost:5500/admin-dashboard"
