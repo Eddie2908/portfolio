@@ -107,7 +107,7 @@ async def send_notification_email(contact_data):
             "Nouveau message de contact",
             body,
             "Voir dans le dashboard",
-            f"{settings.ADMIN_URL}/pages/messages.html",
+            f"{settings.ADMIN_URL}/messages",
         ),
         subtype="html",
     )
@@ -160,7 +160,7 @@ async def send_testimonial_notification_email(testimonial_data):
             "Nouveau témoignage à valider",
             body,
             "Approuver / Rejeter",
-            f"{settings.ADMIN_URL}/pages/testimonials.html",
+            f"{settings.ADMIN_URL}/testimonials",
         ),
         subtype="html",
     )

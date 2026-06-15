@@ -137,7 +137,7 @@ async def send_notification_email_resend(contact_data) -> bool:
         "Nouveau message de contact",
         body_html,
         "Voir dans le dashboard",
-        f"{settings.ADMIN_URL}/pages/messages.html",
+        f"{settings.ADMIN_URL}/messages",
     )
 
     text_content = (
@@ -173,7 +173,7 @@ async def send_testimonial_notification_email_resend(testimonial_data) -> bool:
         "Nouveau témoignage à valider",
         body_html,
         "Approuver / Rejeter",
-        f"{settings.ADMIN_URL}/pages/testimonials.html",
+        f"{settings.ADMIN_URL}/testimonials",
     )
 
     text_content = (
