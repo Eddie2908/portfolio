@@ -45,7 +45,16 @@ export default function ResetPassword() {
       toast.success('Mot de passe réinitialisé avec succès');
       setTimeout(() => router.push('/admin/login'), 2000);
     } catch (err: any) {
-      toast.error(err.response?.data?.detail || 'Erreur lors de la réinitialisation');
+      let msg = 'Erreur lors de la réinitialisation';
+      const detail = err.response?.data?.detail;
+      if (typeof detail === 'string') {
+        msg = detail;
+      } else if (Array.isArray(detail)) {
+        msg = detail.map((d: any) => d.msg || String(d)).join(', ');
+      } else if (typeof detail === 'object' && detail !== null) {
+        msg = detail.msg || JSON.stringify(detail);
+      }
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
