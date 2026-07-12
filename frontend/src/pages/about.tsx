@@ -8,7 +8,7 @@ export default function AboutPage() {
   return (
     <>
       <Head>
-        <title>À propos DevPortfolio</title>
+        <title>À propos — DevPortfolio</title>
         <meta name="description" content="Découvrez mon parcours, mes compétences et ma vision du développement web." />
       </Head>
       <Header />

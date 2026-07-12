@@ -94,10 +94,13 @@ async function loadRecentActivity() {
     }
     list.innerHTML = items.map(m => {
       const ago = timeAgo(m.created_at);
-      return `<div class="activity-item"><div class="activity-dot"></div><span class="activity-text">Message de <strong>${m.name}</strong> — ${m.subject}</span><span class="activity-time">${ago}</span></div>`;
+      return `<div class="activity-item"><div class="activity-dot"></div><span class="activity-text">Message de <strong>${escapeHtml(m.name)}</strong> — ${escapeHtml(m.subject)}</span><span class="activity-time">${ago}</span></div>`;
     }).join('');
   } catch (e) {
-    // keep existing activity display
+    const list = document.getElementById('activityList');
+    if (list) {
+      list.innerHTML = '<div class="activity-item"><span class="activity-text" style="color:var(--text-muted)">Impossible de charger l\'activité récente</span></div>';
+    }
   }
 }
 

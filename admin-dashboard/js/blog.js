@@ -24,8 +24,8 @@ function renderPostsTable(posts) {
 
   tbody.innerHTML = posts.map((p) => `
     <tr>
-      <td>${p.title}</td>
-      <td><span class="status-badge">${p.category}</span></td>
+      <td>${escapeHtml(p.title)}</td>
+      <td><span class="status-badge">${escapeHtml(p.category)}</span></td>
       <td><span class="status-badge status-${p.status}">${p.status === 'published' ? 'Publié' : 'Brouillon'}</span></td>
       <td>${new Date(p.created_at).toLocaleDateString('fr-FR')}</td>
       <td>

@@ -1,5 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException, Query, Request, UploadFile, File
+import logging
 import uuid
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, UploadFile, File
 from app.api.dependencies import get_admin_user, get_super_admin
 from app.database.connection import get_supabase, run_db
 from app.schemas.project_schema import ProjectCreate, ProjectUpdate
@@ -11,7 +12,9 @@ from app.schemas.user_schema import UserCreate
 from app.services.auth_service import create_user as svc_create_user
 from app.services.project_service import create_project, update_project, delete_project
 from app.services.admin_service import get_dashboard_stats
+from app.utils.security import validate_password_strength, is_genuine_image
 
+logger = logging.getLogger("portfolio_api")
 router = APIRouter()
 
 
@@ -24,7 +27,7 @@ async def upload_file(
 ):
     from app.core.config import settings as app_settings
 
-    ALLOWED_TYPES = {"image/jpeg", "image/png", "image/webp", "image/gif", "image/svg+xml"}
+    ALLOWED_TYPES = {"image/jpeg", "image/png", "image/webp", "image/gif"}
     if file.content_type not in ALLOWED_TYPES:
         raise HTTPException(status_code=400, detail="Type de fichier non autorisé")
 
@@ -35,6 +38,8 @@ async def upload_file(
             status_code=413,
             detail=f"Fichier trop volumineux. Maximum : {app_settings.MAX_UPLOAD_SIZE_MB} Mo",
         )
+    if not is_genuine_image(file.content_type, content):
+        raise HTTPException(status_code=400, detail="Le contenu du fichier ne correspond pas au type déclaré")
 
     ext = file.filename.rsplit(".", 1)[-1].lower() if "." in (file.filename or "") else "bin"
     filename = f"uploads/{uuid.uuid4()}.{ext}"
@@ -47,7 +52,8 @@ async def upload_file(
             {"content-type": file.content_type},
         ))
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Erreur upload : {str(e)}")
+        logger.error(f"Upload to bucket '{bucket}' failed: {e}")
+        raise HTTPException(status_code=500, detail="Erreur lors de l'upload")
 
     url = supabase.storage.from_(bucket).get_public_url(filename)
     return {"url": url, "filename": filename}
@@ -232,6 +238,10 @@ def admin_get_users(admin: dict = Depends(get_super_admin)):
 
 @router.post("/users", status_code=201)
 def admin_create_user(data: UserCreate, admin: dict = Depends(get_super_admin)):
+    pwd_error = validate_password_strength(data.password)
+    if pwd_error:
+        raise HTTPException(status_code=400, detail=pwd_error)
+
     supabase = get_supabase()
     existing = supabase.table("users").select("id").eq("email", data.email).execute()
     if existing.data:
@@ -253,14 +263,14 @@ def admin_delete_user(user_id: int, admin: dict = Depends(get_super_admin)):
 
 
 @router.get("/settings")
-def admin_get_settings(admin: dict = Depends(get_admin_user)):
+def admin_get_settings(admin: dict = Depends(get_super_admin)):
     supabase = get_supabase()
     response = supabase.table("settings").select("*").eq("id", 1).single().execute()
     return response.data or {}
 
 
 @router.put("/settings")
-def admin_update_settings(data: SettingsUpdate, admin: dict = Depends(get_admin_user)):
+def admin_update_settings(data: SettingsUpdate, admin: dict = Depends(get_super_admin)):
     supabase = get_supabase()
     update_data = data.model_dump(exclude_none=True)
     supabase.table("settings").upsert({"id": 1, **update_data}).execute()

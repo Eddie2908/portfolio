@@ -1,17 +1,24 @@
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion, useScroll, useTransform, useReducedMotion } from 'framer-motion';
 import { useRef } from 'react';
 import { useReveal } from '@/hooks/useReveal';
 import { Sparkles } from 'lucide-react';
 import { useSkills } from '@/hooks/usePortfolio';
 
+function skillLevelLabel(level: number) {
+  if (level >= 80) return 'Expert';
+  if (level >= 50) return 'Confirmé';
+  return 'Débutant';
+}
+
 export default function Skills() {
   const { ref: inViewRef, inView } = useReveal({ threshold: 0.1 });
   const { skills: skillGroups } = useSkills();
+  const reduceMotion = useReducedMotion();
 
   const sectionRef = useRef(null);
   const { scrollYProgress } = useScroll({ target: sectionRef, offset: ['start end', 'end start'] });
-  const blob1Y = useTransform(scrollYProgress, [0, 1], [80, -80]);
-  const blob2Y = useTransform(scrollYProgress, [0, 1], [-80, 80]);
+  const blob1Y = useTransform(scrollYProgress, [0, 1], reduceMotion ? [0, 0] : [80, -80]);
+  const blob2Y = useTransform(scrollYProgress, [0, 1], reduceMotion ? [0, 0] : [-80, 80]);
 
   const setRefs = (el) => {
     sectionRef.current = el;
@@ -85,7 +92,9 @@ export default function Skills() {
                   <div key={name}>
                     <div className="flex justify-between items-baseline mb-1.5">
                       <span className="text-sm dark:text-white/75 text-gray-700 font-medium">{name}</span>
-                      <span className="text-xs font-semibold tabular-nums" style={{ color }}>{level}%</span>
+                      <span className="text-xs font-semibold tabular-nums" style={{ color }}>
+                        {skillLevelLabel(level)} · {level}%
+                      </span>
                     </div>
                     <div className="relative h-1.5 dark:bg-white/8 bg-black/8 rounded-full overflow-hidden">
                       <motion.div

@@ -20,6 +20,11 @@ const ProjectCard = forwardRef<HTMLDivElement, any>(function ProjectCard({ proje
     e.currentTarget.style.setProperty('--x', `${e.clientX - r.left}px`);
     e.currentTarget.style.setProperty('--y', `${e.clientY - r.top}px`);
   };
+  const thumbBgClass =
+    project.category === 'backend'
+      ? 'dark:bg-gradient-to-br dark:from-[#1e1540] dark:to-[#0d0f18] bg-gradient-to-br from-[#eef1fa] to-[#e4e7f5]'
+      : 'dark:bg-gradient-to-br dark:from-[#1a1f2e] dark:to-[#0d0f18] bg-gradient-to-br from-[#eef1fa] to-[#e4e7f5]';
+
   return (
     <motion.div
       ref={ref}
@@ -38,12 +43,7 @@ const ProjectCard = forwardRef<HTMLDivElement, any>(function ProjectCard({ proje
         onClick={() => onOpen?.(project)}
         data-cursor="view"
         aria-label={`Aperçu de ${project.title}`}
-        className="block w-full h-52 relative overflow-hidden text-left"
-        style={{
-          background: `linear-gradient(135deg, ${
-            project.category === 'backend' ? '#1e1540' : '#1a1f2e'
-          }, #0d0f18)`,
-        }}
+        className={`block w-full h-52 relative overflow-hidden text-left ${thumbBgClass}`}
       >
         {project.image_url ? (
           <Image

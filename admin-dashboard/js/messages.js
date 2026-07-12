@@ -24,8 +24,8 @@ function renderMessagesTable(messages) {
 
   tbody.innerHTML = messages.map((m) => `
     <tr>
-      <td><strong>${m.name}</strong><br><small style="color:var(--text-muted)">${m.email}</small></td>
-      <td>${m.subject}</td>
+      <td><strong>${escapeHtml(m.name)}</strong><br><small style="color:var(--text-muted)">${escapeHtml(m.email)}</small></td>
+      <td>${escapeHtml(m.subject)}</td>
       <td><span class="status-badge status-${m.status}">${m.status === 'unread' ? 'Non lu' : 'Lu'}</span></td>
       <td>${new Date(m.created_at).toLocaleDateString('fr-FR')}</td>
       <td>

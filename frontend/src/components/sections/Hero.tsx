@@ -1,7 +1,7 @@
 import { useRef } from 'react';
 import Image from 'next/image';
 import type { MouseEvent } from 'react';
-import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import { motion, useMotionValue, useSpring, useTransform, useReducedMotion } from 'framer-motion';
 import Link from 'next/link';
 import { ArrowRight, Download, Github, Linkedin, ChevronDown } from 'lucide-react';
 import { TypeAnimation } from 'react-type-animation';
@@ -11,6 +11,7 @@ import Magnetic from '@/components/ui/Magnetic';
 export default function Hero() {
   const { profile } = useProfile();
   const initials = (profile.full_name || '').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() || 'FK';
+  const reduceMotion = useReducedMotion();
 
   // Mouse parallax (subtle)
   const mx = useMotionValue(0);
@@ -26,6 +27,7 @@ export default function Hero() {
 
   const sectionRef = useRef<HTMLElement | null>(null);
   const handleMove = (e: MouseEvent<HTMLElement>) => {
+    if (reduceMotion) return;
     const r = sectionRef.current?.getBoundingClientRect();
     if (!r) return;
     mx.set((e.clientX - r.left) / r.width - 0.5);
@@ -68,11 +70,10 @@ export default function Hero() {
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-medium mb-6 backdrop-blur-md"
+              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-medium mb-6 backdrop-blur-md dark:text-primary-300 text-primary-600"
               style={{
                 background: 'rgba(88,101,245,0.10)',
                 border: '1px solid rgba(88,101,245,0.25)',
-                color: '#a4b9fd',
                 boxShadow: '0 4px 16px -8px rgba(88,101,245,0.3)',
               }}
             >
@@ -163,21 +164,12 @@ export default function Hero() {
             >
               {/* Rotating ring */}
               <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
+                animate={reduceMotion ? {} : { rotate: 360 }}
+                transition={{ duration: 20, repeat: reduceMotion ? 0 : Infinity, ease: 'linear' }}
                 className="absolute -inset-1 rounded-full"
                 style={{
                   background: 'conic-gradient(from 0deg, transparent 0%, #5865f5 25%, transparent 50%, #c344f0 75%, transparent 100%)',
                   filter: 'blur(2px)',
-                }}
-              />
-              <motion.div
-                animate={{ rotate: -360 }}
-                transition={{ duration: 30, repeat: Infinity, ease: 'linear' }}
-                className="absolute -inset-6 rounded-full opacity-40"
-                style={{
-                  background: 'conic-gradient(from 90deg, transparent 60%, rgba(195,68,240,0.4) 80%, transparent 100%)',
-                  filter: 'blur(8px)',
                 }}
               />
               <div

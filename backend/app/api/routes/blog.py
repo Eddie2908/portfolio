@@ -1,7 +1,9 @@
+import logging
 from fastapi import APIRouter, Depends, HTTPException, Query
 from app.api.dependencies import get_admin_user
 from app.database.connection import get_supabase
 
+logger = logging.getLogger("portfolio_api")
 router = APIRouter()
 
 
@@ -30,7 +32,8 @@ def get_post(slug: str):
     try:
         response = supabase.table("blog_posts").select("*").eq("slug", slug).limit(1).execute()
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error(f"Failed to fetch blog post '{slug}': {e}")
+        raise HTTPException(status_code=500, detail="Erreur serveur")
     if not response.data:
         raise HTTPException(status_code=404, detail="Article non trouvé")
     return response.data[0]

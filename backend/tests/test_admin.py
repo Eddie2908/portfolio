@@ -45,3 +45,23 @@ def test_editor_cannot_access_users(editor_token, client):
     """Editors should not be able to access the users management endpoint."""
     response = client.get("/api/admin/users", headers={"Authorization": f"Bearer {editor_token}"})
     assert response.status_code == 403
+
+
+def test_editor_cannot_update_settings(editor_token, client):
+    """Editors should not be able to modify site settings (super-admin only)."""
+    response = client.put(
+        "/api/admin/settings",
+        json={},
+        headers={"Authorization": f"Bearer {editor_token}"},
+    )
+    assert response.status_code == 403
+
+
+def test_admin_create_user_rejects_weak_password(admin_token, client):
+    """A weak password must be rejected the same way /auth/register rejects it."""
+    response = client.post(
+        "/api/admin/users",
+        json={"name": "Test User", "email": "newuser@test.com", "password": "weak", "role": "editor"},
+        headers={"Authorization": f"Bearer {admin_token}"},
+    )
+    assert response.status_code == 400

@@ -11,6 +11,17 @@ export default function Document() {
           rel="stylesheet"
         />
         <meta name="theme-color" content="#0d0f18" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function() {
+  try {
+    var stored = localStorage.getItem('theme');
+    var isDark = stored ? stored === 'dark' : true;
+    document.documentElement.classList.toggle('dark', isDark);
+  } catch (e) {}
+})();`,
+          }}
+        />
       </Head>
       <body className="bg-dark-950 text-slate-200 antialiased">
         <Main />

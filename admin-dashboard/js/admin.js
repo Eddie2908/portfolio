@@ -79,4 +79,16 @@ function confirmAction(message) {
   return confirm(message);
 }
 
+// Escape untrusted text before injecting into innerHTML (data from the API,
+// e.g. public contact messages, is not HTML-safe by default).
+function escapeHtml(str) {
+  if (str == null) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 setActiveNav();

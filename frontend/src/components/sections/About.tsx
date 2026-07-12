@@ -60,9 +60,9 @@ export default function About() {
             transition={{ duration: 0.7, delay: 0.2 }}
             className="space-y-5"
           >
-            <p className="dark:text-white/70 text-gray-600 text-lg leading-relaxed text-justify">{profile.bio_1}</p>
-            <p className="dark:text-white/60 text-gray-600 leading-relaxed text-justify">{profile.bio_2}</p>
-            <p className="dark:text-white/60 text-gray-600 leading-relaxed text-justify">{profile.bio_3}</p>
+            <p className="dark:text-white/70 text-gray-600 text-lg leading-relaxed">{profile.bio_1}</p>
+            <p className="dark:text-white/60 text-gray-600 leading-relaxed">{profile.bio_2}</p>
+            <p className="dark:text-white/60 text-gray-600 leading-relaxed">{profile.bio_3}</p>
 
             <div className="flex flex-wrap gap-2 pt-2">
               {(profile.tech_tags || []).map((t) => (

@@ -113,6 +113,14 @@
     color: #fff;
   }
 
+  a:focus-visible,
+  button:focus-visible,
+  [role="button"]:focus-visible {
+    outline: 2px solid #5865f5;
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
   /* Scrollbar minimaliste, monochrome, accent au hover */
   ::-webkit-scrollbar {
     width: 10px;

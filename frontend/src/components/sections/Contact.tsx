@@ -18,6 +18,7 @@ type ContactFormData = {
 export default function Contact() {
   const { ref, inView } = useReveal({ threshold: 0.1 });
   const [sending, setSending] = useState(false);
+  const [statusMessage, setStatusMessage] = useState('');
   const { register, handleSubmit, reset, formState: { errors } } = useForm<ContactFormData>();
   const { profile } = useProfile();
 
@@ -32,9 +33,12 @@ export default function Contact() {
     try {
       await contactService.sendMessage(data);
       toast.success('Message envoyé avec succès !');
+      setStatusMessage('Message envoyé avec succès !');
       reset();
     } catch (e) {
-      toast.error(e?.response?.data?.detail || e?.message || 'Erreur lors de l\'envoi. Réessayez.');
+      const message = e?.response?.data?.detail || e?.message || 'Erreur lors de l\'envoi. Réessayez.';
+      toast.error(message);
+      setStatusMessage(message);
     } finally {
       setSending(false);
     }
@@ -96,6 +100,7 @@ export default function Contact() {
             transition={{ duration: 0.7, delay: 0.3 }}
             className="lg:col-span-3"
           >
+            <div aria-live="polite" className="sr-only">{statusMessage}</div>
             <form onSubmit={handleSubmit(onSubmit)} className="glass-card p-8 space-y-5">
               <div className="grid sm:grid-cols-2 gap-5">
                 <div>

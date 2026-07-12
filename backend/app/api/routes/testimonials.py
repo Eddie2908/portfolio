@@ -6,6 +6,7 @@ from app.services.email_service import send_testimonial_notification_email
 from app.services.resend_email import send_testimonial_notification_email_resend
 from app.core.config import settings
 from app.middleware.rate_limit import limiter
+from app.utils.security import is_genuine_image
 import logging
 import uuid
 
@@ -35,6 +36,8 @@ async def upload_testimonial_avatar(request: Request, file: UploadFile = File(..
     content = await file.read()
     if len(content) > 2 * 1024 * 1024:
         raise HTTPException(status_code=400, detail="Image trop grande (max 2 Mo)")
+    if not is_genuine_image(file.content_type, content):
+        raise HTTPException(status_code=400, detail="Le contenu du fichier ne correspond pas au type déclaré")
     ext = file.filename.rsplit(".", 1)[-1].lower() if "." in (file.filename or "") else "jpg"
     filename = f"avatars/{uuid.uuid4()}.{ext}"
     supabase = get_supabase()
@@ -45,7 +48,8 @@ async def upload_testimonial_avatar(request: Request, file: UploadFile = File(..
             {"content-type": file.content_type},
         ))
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Erreur upload : {str(e)}")
+        logger.error(f"Testimonial avatar upload failed: {e}")
+        raise HTTPException(status_code=500, detail="Erreur lors de l'upload")
     url = supabase.storage.from_("testimonials").get_public_url(filename)
     return {"url": url}
 
@@ -64,7 +68,8 @@ async def submit_testimonial(request: Request, data: TestimonialSubmit, backgrou
     try:
         response = await run_db(lambda: supabase.table("testimonials").insert(payload).execute())
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Erreur lors de l'envoi: {str(e)}")
+        logger.error(f"Failed to save testimonial from {data.name}: {e}")
+        raise HTTPException(status_code=500, detail="Erreur lors de l'envoi")
     if not response.data:
         raise HTTPException(status_code=500, detail="Erreur lors de l'enregistrement")
     logger.info(f"New testimonial submitted by {data.name}")
@@ -82,7 +87,8 @@ def approve_testimonial(tid: str, admin: dict = Depends(get_admin_user)):
     try:
         response = supabase.table("testimonials").update({"status": "published"}).eq("id", tid).execute()
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error(f"Failed to approve testimonial {tid}: {e}")
+        raise HTTPException(status_code=500, detail="Erreur serveur")
     if not response.data:
         raise HTTPException(status_code=404, detail="Témoignage non trouvé")
     return response.data[0]
@@ -94,7 +100,8 @@ def reject_testimonial(tid: str, admin: dict = Depends(get_admin_user)):
     try:
         response = supabase.table("testimonials").update({"status": "rejected"}).eq("id", tid).execute()
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error(f"Failed to reject testimonial {tid}: {e}")
+        raise HTTPException(status_code=500, detail="Erreur serveur")
     if not response.data:
         raise HTTPException(status_code=404, detail="Témoignage non trouvé")
     return {"message": "Témoignage rejeté"}
@@ -106,7 +113,8 @@ def get_testimonial(testimonial_id: str):
     try:
         response = supabase.table("testimonials").select("*").eq("id", testimonial_id).limit(1).execute()
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error(f"Failed to fetch testimonial {testimonial_id}: {e}")
+        raise HTTPException(status_code=500, detail="Erreur serveur")
     if not response.data:
         raise HTTPException(status_code=404, detail="Témoignage non trouvé")
     return response.data[0]

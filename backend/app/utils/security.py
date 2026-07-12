@@ -25,6 +25,24 @@ def verify_password(plain: str, hashed: str) -> bool:
     return bcrypt.checkpw(plain.encode("utf-8"), hashed.encode("utf-8"))
 
 
+def is_genuine_image(content_type: str, content: bytes) -> bool:
+    """Checks the file's magic bytes match its declared image content-type.
+
+    Content-Type is client-supplied and spoofable (e.g. a renamed .html file
+    sent as image/png), so this guards against files that pass the
+    declared-type check but aren't actually the image they claim to be.
+    """
+    if content_type == "image/png":
+        return content.startswith(b"\x89PNG\r\n\x1a\n")
+    if content_type == "image/jpeg":
+        return content.startswith(b"\xff\xd8\xff")
+    if content_type == "image/gif":
+        return content.startswith((b"GIF87a", b"GIF89a"))
+    if content_type == "image/webp":
+        return content[:4] == b"RIFF" and content[8:12] == b"WEBP"
+    return False
+
+
 def validate_password_strength(password: str) -> str | None:
     """Returns an error message if password is too weak, None if OK."""
     if len(password) < 8:
