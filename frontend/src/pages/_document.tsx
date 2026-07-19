@@ -15,8 +15,9 @@ export default function Document() {
           dangerouslySetInnerHTML={{
             __html: `(function() {
   try {
+    var isAdmin = window.location.pathname.indexOf('/admin') === 0;
     var stored = localStorage.getItem('theme');
-    var isDark = stored ? stored === 'dark' : true;
+    var isDark = isAdmin ? true : (stored ? stored === 'dark' : true);
     document.documentElement.classList.toggle('dark', isDark);
   } catch (e) {}
 })();`,

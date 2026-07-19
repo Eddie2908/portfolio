@@ -11,7 +11,7 @@ const defaultData = [
 
 export default function Chart({ data = defaultData, title = 'Visites', dataKey = 'visits' }) {
   return (
-    <div className="glass-card p-6">
+    <div className="admin-stat-card">
       <h3 className="font-display font-semibold text-white mb-6">{title}</h3>
       <ResponsiveContainer width="100%" height={260}>
         <AreaChart data={data}>
